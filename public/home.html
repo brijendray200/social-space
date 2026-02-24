@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram - Social Space</title>
+    <link rel="stylesheet" href="style-main.css">
+    <style>
+        /* Home Page Specific Styles */
+        .home-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #000;
+            border-bottom: 1px solid #262626;
+            z-index: 100;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-family: 'Brush Script MT', cursive;
+            font-weight: bold;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .header-icons button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Stories Section */
+        .stories-section {
+            margin-top: 60px;
+            padding: 16px 0;
+            border-bottom: 1px solid #262626;
+            overflow-x: auto;
+        }
+
+        .stories-scroll {
+            display: flex;
+            gap: 12px;
+            padding: 0 16px;
+        }
+
+        .stories-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .story-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            min-width: 64px;
+        }
+
+        .story-ring {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            padding: 2px;
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+        }
+
+        .story-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid #000;
+            overflow: hidden;
+        }
+
+        .story-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .story-username {
+            font-size: 12px;
+            color: #fff;
+            max-width: 64px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Feed Section */
+        .feed-section {
+            padding-bottom: 60px;
+        }
+
+        /* Post Card */
+        .post-card {
+            margin-bottom: 16px;
+            border-bottom: 1px solid #262626;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+        }
+
+        .post-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .post-user-pic {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .post-user-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .post-username {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .post-more {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 16px;
+        }
+
+        .post-actions-left {
+            display: flex;
+            gap: 16px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .post-likes {
+            padding: 0 16px 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .post-caption {
+            padding: 0 16px 8px;
+            font-size: 14px;
+        }
+
+        .post-caption-username {
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .post-comments {
+            padding: 0 16px 8px;
+            font-size: 14px;
+            color: #a8a8a8;
+        }
+
+        .post-time {
+            padding: 0 16px 12px;
+            font-size: 10px;
+            color: #a8a8a8;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <!-- Home Header -->
+    <header class="home-header">
+        <div class="logo">Instagram</div>
+        <div class="header-icons">
+            <button>❤️</button>
+            <button>💬</button>
+        </div>
+    </header>
+
+    <!-- Stories Section -->
+    <div class="stories-section">
+        <div class="stories-scroll" id="stories-container">
+            <div class="story-item">
+                <div class="story-ring">
+                    <div class="story-avatar">
+                        <img src="https://via.placeholder.com/64" alt="Your story">
+                    </div>
+                </div>
+                <span class="story-username">Your story</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feed Section -->
+    <div class="feed-section" id="feed-container">
+        <!-- Posts will be loaded here -->
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active">
+            <span class="nav-icon">🏠</span>
+        </button>
+        <button class="nav-item">
+            <span class="nav-icon">🔍</span>
+        </button>
+        <button class="nav-item">
+            <span class="nav-icon">🎬</span>
+        </button>
+        <button class="nav-item">
+            <span class="nav-icon">🛍️</span>
+        </button>
+        <button class="nav-item" onclick="window.location.href='user-profile.html'">
+            <div class="nav-profile-pic">
+                <img src="https://via.placeholder.com/30" alt="Profile">
+            </div>
+        </button>
+    </nav>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let token = localStorage.getItem('token');
+
+        if (!token) {
+            window.location.href = '/';
+        }
+
+        // Load Stories
+        async function loadStories() {
+            try {
+                const response = await fetch(`${API_URL}/stories`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const storiesData = await response.json();
+                
+                const container = document.getElementById('stories-container');
+                
+                storiesData.forEach(userStories => {
+                    const storyHTML = `
+                        <div class="story-item">
+                            <div class="story-ring">
+                                <div class="story-avatar">
+                                    <img src="${userStories.user.profilePicture || 'https://via.placeholder.com/64'}" alt="${userStories.user.username}">
+                                </div>
+                            </div>
+                            <span class="story-username">${userStories.user.username}</span>
+                        </div>
+                    `;
+                    container.innerHTML += storyHTML;
+                });
+            } catch (error) {
+                console.error('Failed to load stories:', error);
+            }
+        }
+
+        // Load Feed
+        async function loadFeed() {
+            try {
+                const response = await fetch(`${API_URL}/posts`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                const container = document.getElementById('feed-container');
+                
+                if (data.posts.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; padding:40px; color:#a8a8a8;">No posts yet</p>';
+                    return;
+                }
+
+                container.innerHTML = data.posts.map(post => {
+                    const media = post.media[0];
+                    return `
+                        <div class="post-card">
+                            <div class="post-header">
+                                <div class="post-user">
+                                    <div class="post-user-pic">
+                                        <img src="${post.user.profilePicture || 'https://via.placeholder.com/32'}" alt="${post.user.username}">
+                                    </div>
+                                    <span class="post-username">${post.user.username}</span>
+                                </div>
+                                <button class="post-more">⋯</button>
+                            </div>
+                            ${media ? `<img class="post-image" src="${media.url}" alt="Post">` : ''}
+                            <div class="post-actions">
+                                <div class="post-actions-left">
+                                    <button class="action-btn" onclick="likePost('${post._id}')">❤️</button>
+                                    <button class="action-btn">💬</button>
+                                    <button class="action-btn">📤</button>
+                                </div>
+                                <button class="action-btn">🔖</button>
+                            </div>
+                            <div class="post-likes">${post.likes.length} likes</div>
+                            <div class="post-caption">
+                                <span class="post-caption-username">${post.user.username}</span>
+                                ${post.content}
+                            </div>
+                            ${post.comments.length > 0 ? `<div class="post-comments">View all ${post.comments.length} comments</div>` : ''}
+                            <div class="post-time">${new Date(post.createdAt).toLocaleString()}</div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Failed to load feed:', error);
+            }
+        }
+
+        async function likePost(postId) {
+            try {
+                await fetch(`${API_URL}/posts/${postId}/like`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                loadFeed();
+            } catch (error) {
+                console.error('Failed to like post:', error);
+            }
+        }
+
+        // Initialize
+        loadStories();
+        loadFeed();
+    </script>
+</body>
+</html>

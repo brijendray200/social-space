@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .message {
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        .link {
+            text-align: center;
+            margin-top: 15px;
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        #console-log {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Test Login System</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('register')">Register</button>
+            <button class="tab" onclick="showTab('login')">Login</button>
+            <button class="tab" onclick="showTab('forgot')">Forgot Password</button>
+        </div>
+
+        <!-- Register Form -->
+        <div id="register-section" class="form-section active">
+            <form id="register-form">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="reg-username" required minlength="3">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="reg-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="reg-password" required minlength="6">
+                </div>
+                <button type="submit">Register</button>
+            </form>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-section" class="form-section">
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+
+        <!-- Forgot Password Form -->
+        <div id="forgot-section" class="form-section">
+            <form id="forgot-form">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="forgot-email" required>
+                </div>
+                <button type="submit">Send OTP</button>
+            </form>
+            
+            <div id="otp-section" style="display:none; margin-top: 20px;">
+                <div class="form-group">
+                    <label>Enter OTP</label>
+                    <input type="text" id="otp-input" maxlength="6" pattern="[0-9]{6}">
+                </div>
+                <button onclick="verifyOTP()">Verify OTP</button>
+            </div>
+            
+            <div id="reset-section" style="display:none; margin-top: 20px;">
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" id="new-password" minlength="6">
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="confirm-password" minlength="6">
+                </div>
+                <button onclick="resetPassword()">Reset Password</button>
+            </div>
+        </div>
+
+        <div id="message" class="message"></div>
+        
+        <div id="console-log"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let forgotEmail = '';
+        let currentOTP = '';
+
+        function log(message, type = 'info') {
+            const consoleLog = document.getElementById('console-log');
+            const time = new Date().toLocaleTimeString();
+            const color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'blue';
+            consoleLog.innerHTML += `<div style="color: ${color}">[${time}] ${message}</div>`;
+            consoleLog.scrollTop = consoleLog.scrollHeight;
+            console.log(message);
+        }
+
+        function showMessage(message, type) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.textContent = message;
+            msgDiv.className = `message ${type}`;
+            msgDiv.style.display = 'block';
+            setTimeout(() => {
+                msgDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab + '-section').classList.add('active');
+        }
+
+        // Register
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('reg-username').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+
+            log(`Attempting register: ${email}`);
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const data = await response.json();
+                log(`Response: ${JSON.stringify(data)}`);
+
+                if (response.ok) {
+                    showMessage('Registration successful!', 'success');
+                    log('✅ Registration successful', 'success');
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userInfo', JSON.stringify(data.user));
+                } else {
+                    showMessage(data.error || 'Registration failed', 'error');
+                    log('❌ Registration failed: ' + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+                log('❌ Error: ' + error.message, 'error');
+            }
+        });
+
+        // Login
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            log(`Attempting login: ${email}`);
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                log(`Response: ${JSON.stringify(data)}`);
+
+                if (response.ok) {
+                    showMessage('Login successful!', 'success');
+                    log('✅ Login successful', 'success');
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userInfo', JSON.stringify(data.user));
+                } else {
+                    showMessage(data.error || 'Login failed', 'error');
+                    log('❌ Login failed: ' + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+                log('❌ Error: ' + error.message, 'error');
+            }
+        });
+
+        // Forgot Password
+        document.getElementById('forgot-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('forgot-email').value;
+            forgotEmail = email;
+
+            log(`Sending OTP to: ${email}`);
+
+            try {
+                const response = await fetch(`${API_URL}/auth/forgot-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+                log(`Response: ${JSON.stringify(data)}`);
+
+                if (response.ok) {
+                    showMessage('OTP sent! Check console.', 'success');
+                    log('✅ OTP sent successfully', 'success');
+                    if (data.otp) {
+                        currentOTP = data.otp;
+                        log(`🔑 OTP: ${data.otp}`, 'success');
+                        showMessage(`OTP: ${data.otp}`, 'success');
+                    }
+                    document.getElementById('otp-section').style.display = 'block';
+                } else {
+                    showMessage(data.error || 'Failed to send OTP', 'error');
+                    log('❌ Failed: ' + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+                log('❌ Error: ' + error.message, 'error');
+            }
+        });
+
+        async function verifyOTP() {
+            const otp = document.getElementById('otp-input').value;
+            log(`Verifying OTP: ${otp}`);
+
+            try {
+                const response = await fetch(`${API_URL}/auth/verify-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: forgotEmail, otp })
+                });
+
+                const data = await response.json();
+                log(`Response: ${JSON.stringify(data)}`);
+
+                if (response.ok) {
+                    showMessage('OTP verified!', 'success');
+                    log('✅ OTP verified', 'success');
+                    document.getElementById('reset-section').style.display = 'block';
+                } else {
+                    showMessage(data.error || 'Invalid OTP', 'error');
+                    log('❌ Failed: ' + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+                log('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        async function resetPassword() {
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const otp = document.getElementById('otp-input').value;
+
+            if (newPassword !== confirmPassword) {
+                showMessage('Passwords do not match', 'error');
+                return;
+            }
+
+            log(`Resetting password for: ${forgotEmail}`);
+
+            try {
+                const response = await fetch(`${API_URL}/auth/reset-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: forgotEmail, otp, newPassword })
+                });
+
+                const data = await response.json();
+                log(`Response: ${JSON.stringify(data)}`);
+
+                if (response.ok) {
+                    showMessage('Password reset successful!', 'success');
+                    log('✅ Password reset successful', 'success');
+                    setTimeout(() => showTab('login'), 2000);
+                } else {
+                    showMessage(data.error || 'Reset failed', 'error');
+                    log('❌ Failed: ' + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+                log('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        log('Test page loaded. Server: ' + API_URL);
+    </script>
+</body>
+</html>

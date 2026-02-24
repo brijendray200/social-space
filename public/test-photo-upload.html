@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Photo Upload</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #0095f6;
+        }
+        .profile-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #0095f6;
+            margin-bottom: 20px;
+        }
+        .upload-btn {
+            padding: 12px 24px;
+            background: #0095f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px;
+        }
+        .upload-btn:hover {
+            background: #0081d6;
+        }
+        .remove-btn {
+            background: #ed4956;
+        }
+        .remove-btn:hover {
+            background: #c92a35;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .message {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .log-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #000;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #0095f6;
+            padding-left: 10px;
+        }
+        .log-error {
+            border-left-color: #ed4956;
+            color: #ed4956;
+        }
+        .log-success {
+            border-left-color: #4caf50;
+            color: #4caf50;
+        }
+        .credentials {
+            background: #262626;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .credentials p {
+            margin: 5px 0;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .spinner {
+            border: 4px solid #363636;
+            border-top: 4px solid #0095f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📷 Test Photo Upload</h1>
+        
+        <div class="credentials">
+            <p><strong>Test Credentials:</strong></p>
+            <p>Email: test@example.com</p>
+            <p>Password: test123</p>
+            <p id="token-status">Token: Not logged in</p>
+        </div>
+
+        <div class="profile-section">
+            <img id="profile-pic" class="profile-pic" src="https://via.placeholder.com/150/262626/ffffff?text=No+Photo" alt="Profile">
+            <br>
+            <button class="upload-btn" onclick="document.getElementById('file-input').click()">
+                📷 Upload Photo
+            </button>
+            <button class="upload-btn remove-btn" onclick="removePhoto()">
+                🗑️ Remove Photo
+            </button>
+            <input type="file" id="file-input" accept="image/*" onchange="uploadPhoto(event)">
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Uploading...</p>
+        </div>
+
+        <div id="message"></div>
+
+        <div class="log-section" id="logs">
+            <div class="log-entry">Console logs will appear here...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let token = localStorage.getItem('token');
+
+        function log(message, type = 'info') {
+            const logsDiv = document.getElementById('logs');
+            const time = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'log-error' : type === 'success' ? 'log-success' : '';
+            logsDiv.innerHTML += `<div class="log-entry ${className}">[${time}] ${message}</div>`;
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function showMessage(message, type) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => {
+                msgDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        // Check token on load
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (token) {
+                document.getElementById('token-status').textContent = 'Token: ✅ Logged in';
+                log('✅ Token found in localStorage', 'success');
+                await loadCurrentPhoto();
+            } else {
+                document.getElementById('token-status').textContent = 'Token: ❌ Not logged in';
+                log('⚠️ No token found. Please login first.', 'error');
+                showMessage('Please login first at: <a href="/test-login.html" style="color: #0095f6;">Test Login Page</a>', 'error');
+            }
+        });
+
+        // Load current profile photo
+        async function loadCurrentPhoto() {
+            try {
+                log('📥 Loading current profile photo...');
+                const response = await fetch(`${API_URL}/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    log('✅ User data loaded', 'success');
+                    
+                    if (user.profilePicture) {
+                        document.getElementById('profile-pic').src = user.profilePicture;
+                        log('✅ Profile picture loaded: ' + user.profilePicture, 'success');
+                    } else {
+                        log('ℹ️ No profile picture set');
+                    }
+                } else {
+                    log('❌ Failed to load user data: ' + response.status, 'error');
+                }
+            } catch (error) {
+                log('❌ Error loading photo: ' + error.message, 'error');
+            }
+        }
+
+        // Upload photo
+        async function uploadPhoto(event) {
+            const file = event.target.files[0];
+            
+            if (!file) {
+                log('⚠️ No file selected', 'error');
+                return;
+            }
+
+            if (!token) {
+                showMessage('Please login first!', 'error');
+                log('❌ No token found', 'error');
+                return;
+            }
+
+            log(`📤 Uploading file: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`);
+
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showMessage('Please select an image file', 'error');
+                log('❌ Invalid file type: ' + file.type, 'error');
+                return;
+            }
+
+            // Validate file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showMessage('Image size must be less than 5MB', 'error');
+                log('❌ File too large: ' + (file.size / 1024 / 1024).toFixed(2) + ' MB', 'error');
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                const formData = new FormData();
+                formData.append('profilePicture', file);
+
+                log('📡 Sending request to: ' + API_URL + '/users/profile-picture');
+                log('📋 Headers: Authorization: Bearer ' + token.substring(0, 20) + '...');
+
+                const response = await fetch(`${API_URL}/users/profile-picture`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                log('📨 Response status: ' + response.status);
+
+                const data = await response.json();
+                log('📦 Response data: ' + JSON.stringify(data));
+
+                if (response.ok) {
+                    showMessage('✅ Profile photo updated successfully!', 'success');
+                    log('✅ Upload successful!', 'success');
+                    
+                    // Update image
+                    document.getElementById('profile-pic').src = data.profilePicture;
+                    log('✅ Image updated: ' + data.profilePicture, 'success');
+                    
+                    // Update localStorage
+                    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+                    userInfo.profilePicture = data.profilePicture;
+                    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+                    log('✅ localStorage updated', 'success');
+                } else {
+                    showMessage('❌ Upload failed: ' + data.error, 'error');
+                    log('❌ Upload failed: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('❌ Error: ' + error.message, 'error');
+                log('❌ Error: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+                event.target.value = ''; // Reset input
+            }
+        }
+
+        // Remove photo
+        async function removePhoto() {
+            if (!token) {
+                showMessage('Please login first!', 'error');
+                log('❌ No token found', 'error');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to remove your profile photo?')) {
+                return;
+            }
+
+            showLoading(true);
+            log('🗑️ Removing profile photo...');
+
+            try {
+                const response = await fetch(`${API_URL}/users/profile-picture`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                log('📨 Response status: ' + response.status);
+
+                const data = await response.json();
+                log('📦 Response data: ' + JSON.stringify(data));
+
+                if (response.ok) {
+                    showMessage('✅ Profile photo removed!', 'success');
+                    log('✅ Photo removed successfully', 'success');
+                    
+                    // Update image
+                    document.getElementById('profile-pic').src = 'https://via.placeholder.com/150/262626/ffffff?text=No+Photo';
+                    
+                    // Update localStorage
+                    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+                    userInfo.profilePicture = '';
+                    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+                    log('✅ localStorage updated', 'success');
+                } else {
+                    showMessage('❌ Remove failed: ' + data.error, 'error');
+                    log('❌ Remove failed: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('❌ Error: ' + error.message, 'error');
+                log('❌ Error: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+    </script>
+</body>
+</html>

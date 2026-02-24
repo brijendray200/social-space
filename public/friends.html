@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friends - Social Space</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="friends-style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h2 class="nav-logo">🌟 Social Space</h2>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">🏠 Home</a>
+                <a href="friends.html" class="nav-link active">👥 Friends</a>
+                <a href="profile.html" class="nav-link">👤 Profile</a>
+            </div>
+            <div class="nav-right">
+                <span id="user-info" class="user-greeting"></span>
+                <button onclick="logout()" class="btn-logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="friends-page">
+        <div class="friends-sidebar">
+            <div class="sidebar-card">
+                <h3>📊 Quick Stats</h3>
+                <div class="stat-item">
+                    <span class="stat-label">Friends</span>
+                    <span class="stat-value" id="total-friends">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Pending Requests</span>
+                    <span class="stat-value" id="pending-count">0</span>
+                </div>
+            </div>
+
+            <div class="sidebar-card">
+                <h3>🎯 Quick Actions</h3>
+                <button onclick="scrollToSection('requests')" class="sidebar-btn">
+                    📬 View Requests
+                </button>
+                <button onclick="scrollToSection('search')" class="sidebar-btn">
+                    🔍 Find Friends
+                </button>
+                <button onclick="scrollToSection('friends')" class="sidebar-btn">
+                    👥 My Friends
+                </button>
+            </div>
+        </div>
+
+        <div class="friends-main">
+            <!-- Friend Requests Section -->
+            <div id="requests" class="friends-section">
+                <div class="section-header">
+                    <h2>📬 Friend Requests</h2>
+                    <span class="badge" id="request-badge">0</span>
+                </div>
+                <div id="friend-requests" class="cards-grid">
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <p>No pending friend requests</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Users Section -->
+            <div id="search" class="friends-section">
+                <div class="section-header">
+                    <h2>🔍 Find Friends</h2>
+                </div>
+                <div class="search-container">
+                    <div class="search-box">
+                        <input type="text" id="search-input" placeholder="Search by username or email..." autocomplete="off">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                </div>
+                <div id="search-results" class="cards-grid">
+                    <div class="empty-state">
+                        <div class="empty-icon">👋</div>
+                        <p>Start typing to find friends...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Friends Section -->
+            <div id="friends" class="friends-section">
+                <div class="section-header">
+                    <h2>👥 My Friends</h2>
+                    <span class="badge" id="friends-badge">0</span>
+                </div>
+                <div id="friends-list" class="cards-grid">
+                    <div class="empty-state">
+                        <div class="empty-icon">😊</div>
+                        <p>No friends yet. Start adding friends!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="friends.js"></script>
+</body>
+</html>

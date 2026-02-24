@@ -1,0 +1,345 @@
+/* Instagram-Style Image Filters */
+
+.filter-container {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 15px 0;
+    margin-bottom: 15px;
+}
+
+.filter-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.filter-option {
+    min-width: 80px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.filter-option img {
+    width: 70px;
+    height: 70px;
+    border-radius: 8px;
+    border: 3px solid transparent;
+    transition: all 0.3s;
+}
+
+.filter-option.active img {
+    border-color: var(--primary);
+    transform: scale(1.1);
+}
+
+.filter-option span {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+}
+
+/* Filter Effects */
+.filter-normal { filter: none; }
+.filter-clarendon { filter: contrast(1.2) saturate(1.35); }
+.filter-gingham { filter: brightness(1.05) hue-rotate(-10deg); }
+.filter-moon { filter: grayscale(1) contrast(1.1) brightness(1.1); }
+.filter-lark { filter: contrast(0.9) brightness(1.1); }
+.filter-reyes { filter: sepia(0.22) brightness(1.1) contrast(0.85) saturate(0.75); }
+.filter-juno { filter: contrast(1.2) brightness(1.1) saturate(1.4); }
+.filter-slumber { filter: saturate(0.66) brightness(1.05); }
+.filter-crema { filter: sepia(0.5) contrast(1.25) brightness(1.15) saturate(0.9); }
+.filter-ludwig { filter: contrast(1.05) brightness(1.05) saturate(2); }
+.filter-aden { filter: hue-rotate(-20deg) contrast(0.9) saturate(0.85) brightness(1.2); }
+.filter-perpetua { filter: contrast(1.1) brightness(1.25) saturate(1.1); }
+.filter-amaro { filter: hue-rotate(-10deg) contrast(0.9) brightness(1.1) saturate(1.5); }
+.filter-mayfair { filter: contrast(1.1) saturate(1.1); }
+.filter-rise { filter: brightness(1.05) sepia(0.2) contrast(0.9) saturate(0.9); }
+.filter-hudson { filter: brightness(1.2) contrast(0.9) saturate(1.1); }
+.filter-valencia { filter: contrast(1.08) brightness(1.08) sepia(0.08); }
+.filter-xpro2 { filter: sepia(0.3) contrast(1.3) brightness(0.8) saturate(1.5); }
+.filter-sierra { filter: contrast(0.9) brightness(1.1) sepia(0.25); }
+.filter-willow { filter: grayscale(0.5) contrast(0.95) brightness(0.9); }
+.filter-lofi { filter: saturate(1.1) contrast(1.5); }
+.filter-inkwell { filter: grayscale(1) brightness(1.1) contrast(1.1); }
+.filter-nashville { filter: sepia(0.2) contrast(1.2) brightness(1.05) saturate(1.2); }
+
+/* Animated Gradient Backgrounds */
+.gradient-bg-1 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    animation: gradientShift 10s ease infinite;
+}
+
+.gradient-bg-2 {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    animation: gradientShift 10s ease infinite;
+}
+
+.gradient-bg-3 {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    animation: gradientShift 10s ease infinite;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+/* Glassmorphism Effect */
+.glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Neon Glow Effect */
+.neon-glow {
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.5),
+                0 0 20px rgba(102, 126, 234, 0.3),
+                0 0 30px rgba(102, 126, 234, 0.2);
+    animation: neonPulse 2s ease-in-out infinite;
+}
+
+@keyframes neonPulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(102, 126, 234, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.8); }
+}
+
+/* Floating Animation */
+.floating {
+    animation: floating 3s ease-in-out infinite;
+}
+
+@keyframes floating {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Shimmer Effect */
+.shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* Pulse Animation */
+.pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Bounce Animation */
+.bounce {
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Rotate Animation */
+.rotate {
+    animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Scale Animation */
+.scale-hover:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+/* Slide In Animations */
+.slide-in-left {
+    animation: slideInLeft 0.5s ease-out;
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-50px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.slide-in-right {
+    animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(50px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Fade In Animation */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+/* Zoom In Animation */
+.zoom-in {
+    animation: zoomIn 0.5s ease-out;
+}
+
+@keyframes zoomIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Flip Animation */
+.flip {
+    animation: flip 0.6s ease-in-out;
+}
+
+@keyframes flip {
+    0% { transform: perspective(400px) rotateY(0); }
+    100% { transform: perspective(400px) rotateY(360deg); }
+}
+
+/* Shake Animation */
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+/* Glow Text Effect */
+.glow-text {
+    text-shadow: 0 0 10px rgba(102, 126, 234, 0.8),
+                 0 0 20px rgba(102, 126, 234, 0.6),
+                 0 0 30px rgba(102, 126, 234, 0.4);
+}
+
+/* 3D Card Effect */
+.card-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+}
+
+.card-3d:hover {
+    transform: rotateY(10deg) rotateX(10deg);
+}
+
+/* Ripple Effect */
+.ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.ripple:active::after {
+    width: 300px;
+    height: 300px;
+}
+
+/* Gradient Text */
+.gradient-text {
+    background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    background-size: 200% auto;
+    animation: gradientText 3s linear infinite;
+}
+
+@keyframes gradientText {
+    to { background-position: 200% center; }
+}
+
+/* Skeleton Loading */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton 1.5s infinite;
+    border-radius: 8px;
+}
+
+@keyframes skeleton {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* Parallax Effect */
+.parallax {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+/* Blur Effect */
+.blur-hover:hover {
+    filter: blur(2px);
+    transition: filter 0.3s ease;
+}
+
+/* Brightness Effect */
+.brightness-hover:hover {
+    filter: brightness(1.2);
+    transition: filter 0.3s ease;
+}
+
+/* Grayscale Effect */
+.grayscale-hover:hover {
+    filter: grayscale(1);
+    transition: filter 0.3s ease;
+}
+
+/* Sepia Effect */
+.sepia-hover:hover {
+    filter: sepia(1);
+    transition: filter 0.3s ease;
+}
+
+/* Invert Effect */
+.invert-hover:hover {
+    filter: invert(1);
+    transition: filter 0.3s ease;
+}
+
+/* Hue Rotate Effect */
+.hue-rotate-hover:hover {
+    filter: hue-rotate(90deg);
+    transition: filter 0.3s ease;
+}
+
+/* Saturate Effect */
+.saturate-hover:hover {
+    filter: saturate(2);
+    transition: filter 0.3s ease;
+}
+
+/* Contrast Effect */
+.contrast-hover:hover {
+    filter: contrast(1.5);
+    transition: filter 0.3s ease;
+}

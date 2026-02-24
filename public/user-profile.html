@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Social Space</title>
+    <link rel="stylesheet" href="style-main.css">
+</head>
+<body>
+    <!-- Top Header -->
+    <header class="top-header">
+        <div class="header-container">
+            <div class="header-left">
+                <button class="back-btn" onclick="window.location.href='home.html'">←</button>
+                <span class="header-username" id="header-username">username</span>
+                <button class="verified-badge">✓</button>
+            </div>
+            <div class="header-right">
+                <button class="header-icon" onclick="window.location.href='index.html'">🔔</button>
+                <button class="header-icon" onclick="openSettingsPage()">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Profile Section -->
+    <div class="profile-section">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-pic-wrapper">
+                <div class="profile-pic-container">
+                    <img id="profile-picture" src="https://via.placeholder.com/150" alt="Profile">
+                    <div class="profile-pic-overlay" onclick="openChangePhotoModal()">
+                        <span class="camera-icon">📷</span>
+                    </div>
+                </div>
+                <button class="change-photo-btn" onclick="openChangePhotoModal()">
+                    Change Photo
+                </button>
+            </div>
+            
+            <div class="profile-stats">
+                <div class="stat-box">
+                    <span class="stat-number" id="posts-stat">0</span>
+                    <span class="stat-label">posts</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number" id="followers-stat">0</span>
+                    <span class="stat-label">followers</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number" id="following-stat">0</span>
+                    <span class="stat-label">following</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Info -->
+        <div class="profile-info">
+            <h2 class="profile-name" id="profile-name">Name</h2>
+            <p class="profile-bio" id="profile-bio">Bio text goes here...</p>
+            <a class="profile-link" id="profile-link" href="#">🔗 Link</a>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn-primary" onclick="openEditProfileModal()">Edit profile</button>
+            <button class="btn-primary" onclick="shareProfile()">Share profile</button>
+            <button class="btn-icon">👤+</button>
+        </div>
+
+        <!-- Story Highlights -->
+        <div class="highlights-container">
+            <div class="highlight-item" onclick="createNewHighlight()">
+                <div class="highlight-circle add-new">
+                    <span class="plus">+</span>
+                </div>
+                <span class="highlight-label">New</span>
+            </div>
+            <div id="highlights-list">
+                <!-- Highlights will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Content Tabs -->
+        <div class="content-tabs">
+            <button class="tab-item active">
+                <span class="tab-icon">⊞</span>
+            </button>
+            <button class="tab-item">
+                <span class="tab-icon">▶</span>
+            </button>
+            <button class="tab-item">
+                <span class="tab-icon">🎬</span>
+            </button>
+            <button class="tab-item">
+                <span class="tab-icon">👤</span>
+            </button>
+        </div>
+
+        <!-- Posts Grid -->
+        <div class="posts-grid" id="posts-grid">
+            <!-- Grid items will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item" onclick="window.location.href='home.html'">
+            <span class="nav-icon">🏠</span>
+        </button>
+        <button class="nav-item" onclick="showSuccess('Search coming soon!')">
+            <span class="nav-icon">🔍</span>
+        </button>
+        <button class="nav-item" onclick="window.location.href='index.html'">
+            <span class="nav-icon">➕</span>
+        </button>
+        <button class="nav-item" onclick="showSuccess('Reels coming soon!')">
+            <span class="nav-icon">🎬</span>
+        </button>
+        <button class="nav-item active">
+            <div class="nav-profile-pic">
+                <img id="nav-profile-pic" src="https://via.placeholder.com/30" alt="Profile">
+            </div>
+        </button>
+    </nav>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Profile</h3>
+                <span class="modal-close" onclick="closeEditProfileModal()">&times;</span>
+            </div>
+            <form id="edit-profile-form" class="edit-form">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="edit-name" placeholder="Your name" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="edit-username" placeholder="Username" maxlength="30">
+                </div>
+                <div class="form-group">
+                    <label>Bio</label>
+                    <textarea id="edit-bio" placeholder="Tell us about yourself..." maxlength="150" rows="3"></textarea>
+                    <span class="char-count" id="bio-char-count">0/150</span>
+                </div>
+                <div class="form-group">
+                    <label>Website</label>
+                    <input type="url" id="edit-website" placeholder="https://yourwebsite.com">
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="edit-location" placeholder="City, Country" maxlength="50">
+                </div>
+                <button type="submit" class="modal-btn">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Change Photo Modal -->
+    <div id="change-photo-modal" class="modal">
+        <div class="modal-content photo-modal">
+            <div class="modal-header">
+                <h3>Change Profile Photo</h3>
+                <span class="modal-close" onclick="closeChangePhotoModal()">&times;</span>
+            </div>
+            <div class="photo-options">
+                <button class="photo-option-btn upload-btn" onclick="document.getElementById('profile-photo-input').click()">
+                    <span class="option-icon">📷</span>
+                    <span class="option-text">Upload Photo</span>
+                </button>
+                <input type="file" id="profile-photo-input" accept="image/*" style="display:none;" onchange="uploadProfilePhoto(event)">
+                
+                <button class="photo-option-btn view-btn" onclick="viewProfilePhoto()">
+                    <span class="option-icon">👁️</span>
+                    <span class="option-text">View Photo</span>
+                </button>
+                
+                <button class="photo-option-btn remove-btn" onclick="removeProfilePhoto()">
+                    <span class="option-icon">🗑️</span>
+                    <span class="option-text">Remove Current Photo</span>
+                </button>
+                
+                <button class="photo-option-btn cancel-btn" onclick="closeChangePhotoModal()">
+                    <span class="option-text">Cancel</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Photo Modal -->
+    <div id="view-photo-modal" class="modal">
+        <div class="modal-content view-photo-content">
+            <div class="modal-header">
+                <h3>Profile Photo</h3>
+                <span class="modal-close" onclick="closeViewPhotoModal()">&times;</span>
+            </div>
+            <div class="photo-viewer">
+                <img id="view-photo-img" src="" alt="Profile Photo">
+            </div>
+            <div class="photo-viewer-actions">
+                <button class="viewer-btn" onclick="closeViewPhotoModal(); openChangePhotoModal();">
+                    Change Photo
+                </button>
+                <button class="viewer-btn danger" onclick="closeViewPhotoModal(); removeProfilePhoto();">
+                    Remove Photo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Page Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content settings-modal">
+            <div class="modal-header">
+                <button class="back-btn" onclick="closeSettingsPage()">←</button>
+                <h3>Settings</h3>
+                <span style="width:24px;"></span>
+            </div>
+            
+            <div class="settings-content">
+                <!-- Profile Settings Section -->
+                <div class="settings-section">
+                    <h4 class="settings-section-title">Profile Settings</h4>
+                    
+                    <button class="settings-item" onclick="openEditProfileFromSettings()">
+                        <span class="settings-icon">👤</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Edit Profile</span>
+                            <span class="settings-desc">Change name, bio, website</span>
+                        </div>
+                        <span class="settings-arrow">›</span>
+                    </button>
+                    
+                    <button class="settings-item" onclick="openChangePhotoFromSettings()">
+                        <span class="settings-icon">📷</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Change Profile Photo</span>
+                            <span class="settings-desc">Upload or remove photo</span>
+                        </div>
+                        <span class="settings-arrow">›</span>
+                    </button>
+                    
+                    <button class="settings-item" onclick="openBioEditor()">
+                        <span class="settings-icon">📝</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Edit Bio</span>
+                            <span class="settings-desc">Update your bio</span>
+                        </div>
+                        <span class="settings-arrow">›</span>
+                    </button>
+                </div>
+
+                <!-- Account Settings Section -->
+                <div class="settings-section">
+                    <h4 class="settings-section-title">Account Settings</h4>
+                    
+                    <button class="settings-item" onclick="openPasswordChange()">
+                        <span class="settings-icon">🔒</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Change Password</span>
+                            <span class="settings-desc">Update your password</span>
+                        </div>
+                        <span class="settings-arrow">›</span>
+                    </button>
+                    
+                    <button class="settings-item" onclick="openPrivacySettings()">
+                        <span class="settings-icon">🔐</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Privacy</span>
+                            <span class="settings-desc">Manage privacy settings</span>
+                        </div>
+                        <span class="settings-arrow">›</span>
+                    </button>
+                    
+                    <button class="settings-item" onclick="openNotificationSettings()">
+                        <span class="settings-icon">🔔</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Notifications</span>
+                            <span class="settings-desc">Manage notifications</span>
+                        </div>
+                        <span class="settings-arrow">›</span>
+                    </button>
+                </div>
+
+                <!-- Content Settings Section -->
+                <div class="settings-section">
+                    <h4 class="settings-section-title">Content</h4>
+                    
+                    <button class="settings-item" onclick="openSavedPosts()">
+                        <span class="settings-icon">🔖</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Saved Posts</span>
+                            <span class="settings-desc">View saved posts</span>
+                        </div>
+                        <span class="settings-arrow">›</span>
+                    </button>
+                    
+                    <button class="settings-item" onclick="openArchive()">
+                        <span class="settings-icon">📦</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Archive</span>
+                            <span class="settings-desc">View archived posts</span>
+                        </div>
+                        <span class="settings-arrow">›</span>
+                    </button>
+                </div>
+
+                <!-- Other Settings Section -->
+                <div class="settings-section">
+                    <h4 class="settings-section-title">Other</h4>
+                    
+                    <button class="settings-item" onclick="openAbout()">
+                        <span class="settings-icon">ℹ️</span>
+                        <div class="settings-text">
+                            <span class="settings-label">About</span>
+                            <span class="settings-desc">App info and version</span>
+                        </div>
+                        <span class="settings-arrow">›</span>
+                    </button>
+                    
+                    <button class="settings-item" onclick="openHelp()">
+                        <span class="settings-icon">❓</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Help</span>
+                            <span class="settings-desc">Get help and support</span>
+                        </div>
+                        <span class="settings-arrow">›</span>
+                    </button>
+                    
+                    <button class="settings-item logout-item" onclick="logoutUser()">
+                        <span class="settings-icon">🚪</span>
+                        <div class="settings-text">
+                            <span class="settings-label">Logout</span>
+                            <span class="settings-desc">Sign out of your account</span>
+                        </div>
+                        <span class="settings-arrow">›</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bio Editor Modal -->
+    <div id="bio-editor-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="back-btn" onclick="closeBioEditor()">←</button>
+                <h3>Edit Bio</h3>
+                <button class="save-btn-header" onclick="saveBioOnly()">Save</button>
+            </div>
+            <div class="bio-editor-content">
+                <textarea id="bio-editor-textarea" placeholder="Write your bio..." maxlength="150" rows="6"></textarea>
+                <div class="bio-char-counter">
+                    <span id="bio-editor-count">0</span>/150
+                </div>
+                <div class="bio-tips">
+                    <p class="tip-title">💡 Bio Tips:</p>
+                    <ul class="tip-list">
+                        <li>Keep it short and interesting</li>
+                        <li>Add emojis to make it fun</li>
+                        <li>Mention what you do</li>
+                        <li>Add your interests</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Change Modal -->
+    <div id="password-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="back-btn" onclick="closePasswordChange()">←</button>
+                <h3>Change Password</h3>
+                <span style="width:24px;"></span>
+            </div>
+            <form id="password-form" class="edit-form">
+                <div class="form-group">
+                    <label>Current Password</label>
+                    <input type="password" id="current-password" placeholder="Enter current password" required>
+                </div>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" id="new-password" placeholder="Enter new password" minlength="6" required>
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Password</label>
+                    <input type="password" id="confirm-password" placeholder="Confirm new password" minlength="6" required>
+                </div>
+                <button type="submit" class="modal-btn">Change Password</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="profile-app.js"></script>
+</body>
+</html>

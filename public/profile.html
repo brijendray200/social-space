@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Social Space</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="filters.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h2 class="gradient-text floating">🌟 Social Space</h2>
+        <div class="nav-right">
+            <button onclick="goBack()" class="back-btn ripple">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <a href="friends.html"><i class="fas fa-user-friends"></i> Friends</a>
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <button onclick="logout()" class="ripple">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <div class="profile-page">
+        <!-- Cover Photo -->
+        <div class="cover-photo-container">
+            <img id="cover-photo" src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1200&h=400&fit=crop" alt="Cover Photo">
+            <button class="edit-cover-btn ripple" onclick="document.getElementById('cover-upload').click()">
+                <i class="fas fa-camera"></i> Change Cover
+            </button>
+            <input type="file" id="cover-upload" accept="image/*" style="display:none" onchange="uploadCoverPhoto(this)">
+        </div>
+
+        <!-- Profile Header -->
+        <div class="profile-header-section">
+            <div class="profile-avatar-large">
+                <img id="profile-avatar" src="https://ui-avatars.com/api/?name=User&size=200&background=667eea&color=fff" alt="Profile">
+                <button class="edit-avatar-btn ripple" onclick="document.getElementById('avatar-upload').click()">
+                    <i class="fas fa-camera"></i>
+                </button>
+                <input type="file" id="avatar-upload" accept="image/*" style="display:none" onchange="uploadProfilePicture(this)">
+                <div class="online-status-large"></div>
+            </div>
+
+            <div class="profile-info-section">
+                <div class="profile-name-section">
+                    <h1 id="profile-username">Loading...</h1>
+                    <span class="verified-badge"><i class="fas fa-check-circle"></i></span>
+                    <button class="edit-profile-btn ripple" onclick="showEditModal()">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
+                </div>
+                <p id="profile-bio" class="profile-bio">No bio yet</p>
+                <div class="profile-meta">
+                    <span><i class="fas fa-map-marker-alt"></i> <span id="profile-location">Location</span></span>
+                    <span><i class="fas fa-link"></i> <a href="#" id="profile-website" target="_blank">Website</a></span>
+                    <span><i class="fas fa-calendar"></i> Joined <span id="profile-joined">2024</span></span>
+                </div>
+            </div>
+
+            <div class="profile-stats-section">
+                <div class="stat-box">
+                    <h3 id="post-count">0</h3>
+                    <p>Posts</p>
+                </div>
+                <div class="stat-box">
+                    <h3 id="followers-count">0</h3>
+                    <p>Followers</p>
+                </div>
+                <div class="stat-box">
+                    <h3 id="following-count">0</h3>
+                    <p>Following</p>
+                </div>
+                <div class="stat-box">
+                    <h3 id="friend-count">0</h3>
+                    <p>Friends</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Tabs -->
+        <div class="profile-tabs">
+            <button class="profile-tab active" onclick="showTab('posts')">
+                <i class="fas fa-th"></i> Posts
+            </button>
+            <button class="profile-tab" onclick="showTab('photos')">
+                <i class="fas fa-images"></i> Photos
+            </button>
+            <button class="profile-tab" onclick="showTab('videos')">
+                <i class="fas fa-video"></i> Videos
+            </button>
+            <button class="profile-tab" onclick="showTab('friends')">
+                <i class="fas fa-user-friends"></i> Friends
+            </button>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="profile-content">
+            <!-- Posts Tab -->
+            <div id="posts-tab" class="tab-content active">
+                <div id="user-posts" class="posts-grid"></div>
+            </div>
+
+            <!-- Photos Tab -->
+            <div id="photos-tab" class="tab-content">
+                <div id="user-photos" class="media-grid"></div>
+            </div>
+
+            <!-- Videos Tab -->
+            <div id="videos-tab" class="tab-content">
+                <div id="user-videos" class="media-grid"></div>
+            </div>
+
+            <!-- Friends Tab -->
+            <div id="friends-tab" class="tab-content">
+                <div id="user-friends" class="friends-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2><i class="fas fa-user-edit"></i> Edit Profile</h2>
+            <form id="edit-profile-form">
+                <div class="form-group">
+                    <label><i class="fas fa-info-circle"></i> Bio</label>
+                    <textarea id="edit-bio" maxlength="200" placeholder="Tell us about yourself..."></textarea>
+                    <small>Max 200 characters</small>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Location</label>
+                    <input type="text" id="edit-location" placeholder="City, Country">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-link"></i> Website</label>
+                    <input type="url" id="edit-website" placeholder="https://yourwebsite.com">
+                </div>
+                <button type="submit" class="ripple">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="profile.js"></script>
+</body>
+</html>

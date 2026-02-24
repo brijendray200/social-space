@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Social Space</title>
+    <link rel="stylesheet" href="profile-style.css">
+</head>
+<body>
+    <!-- Top Navbar -->
+    <nav class="top-navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo" onclick="window.location.href='index.html'">
+                <span class="logo-icon">🌟</span>
+                <span class="logo-text">Social Space</span>
+            </div>
+            
+            <div class="navbar-search">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search...">
+            </div>
+            
+            <div class="navbar-actions">
+                <button class="nav-icon-btn" onclick="window.location.href='index.html'">
+                    <span class="icon">🏠</span>
+                </button>
+                <button class="nav-icon-btn" onclick="toggleNotifications()">
+                    <span class="icon">❤️</span>
+                    <span class="badge" id="notif-badge">0</span>
+                </button>
+                <button class="nav-icon-btn" onclick="toggleMessages()">
+                    <span class="icon">💬</span>
+                    <span class="badge" id="msg-badge">0</span>
+                </button>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Container -->
+    <div class="profile-container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-pic-section">
+                <div class="profile-pic-wrapper" onclick="showProfilePicModal()">
+                    <img id="profile-pic" src="https://via.placeholder.com/150" alt="Profile">
+                    <div class="profile-pic-overlay">
+                        <span>Change Photo</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-info-section">
+                <div class="profile-top-row">
+                    <h2 id="profile-username" class="username">username</h2>
+                    <button class="btn-edit" onclick="showEditProfileModal()">Edit profile</button>
+                    <button class="btn-share" onclick="shareProfile()">Share profile</button>
+                    <button class="btn-settings" onclick="showSettings()">⚙️</button>
+                </div>
+
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="posts-count">0</span>
+                        <span class="stat-label">posts</span>
+                    </div>
+                    <div class="stat-item" onclick="showFollowersModal()">
+                        <span class="stat-number" id="followers-count">0</span>
+                        <span class="stat-label">followers</span>
+                    </div>
+                    <div class="stat-item" onclick="showFollowingModal()">
+                        <span class="stat-number" id="following-count">0</span>
+                        <span class="stat-label">following</span>
+                    </div>
+                </div>
+
+                <div class="profile-bio">
+                    <h3 id="profile-name" class="name">Name</h3>
+                    <p id="profile-bio" class="bio">Bio goes here...</p>
+                    <a id="profile-website" class="website" href="#" target="_blank"></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Story Highlights -->
+        <div class="highlights-section">
+            <div class="highlight-item add-highlight" onclick="showAddHighlightModal()">
+                <div class="highlight-circle">
+                    <span class="plus-icon">➕</span>
+                </div>
+                <span class="highlight-name">New</span>
+            </div>
+            <div id="highlights-container"></div>
+        </div>
+
+        <!-- Profile Tabs -->
+        <div class="profile-tabs">
+            <button class="tab-btn active" data-tab="posts" onclick="switchTab('posts')">
+                <span class="tab-icon">📱</span>
+                <span class="tab-text">POSTS</span>
+            </button>
+            <button class="tab-btn" data-tab="reels" onclick="switchTab('reels')">
+                <span class="tab-icon">🎬</span>
+                <span class="tab-text">REELS</span>
+            </button>
+            <button class="tab-btn" data-tab="videos" onclick="switchTab('videos')">
+                <span class="tab-icon">📹</span>
+                <span class="tab-text">VIDEOS</span>
+            </button>
+            <button class="tab-btn" data-tab="tagged" onclick="switchTab('tagged')">
+                <span class="tab-icon">👤</span>
+                <span class="tab-text">TAGGED</span>
+            </button>
+        </div>
+
+        <!-- Content Grid -->
+        <div id="posts-grid" class="content-grid"></div>
+        <div id="reels-grid" class="content-grid" style="display:none;"></div>
+        <div id="videos-grid" class="content-grid" style="display:none;"></div>
+        <div id="tagged-grid" class="content-grid" style="display:none;"></div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Profile</h3>
+                <span class="modal-close" onclick="closeModal('edit-profile-modal')">&times;</span>
+            </div>
+            <form id="edit-profile-form">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="edit-name" placeholder="Name">
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="edit-username" placeholder="Username">
+                </div>
+                <div class="form-group">
+                    <label>Bio</label>
+                    <textarea id="edit-bio" placeholder="Bio" maxlength="150"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Website</label>
+                    <input type="url" id="edit-website" placeholder="Website">
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="edit-location" placeholder="Location">
+                </div>
+                <button type="submit" class="modal-btn">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profile Picture Modal -->
+    <div id="profile-pic-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Change Profile Picture</h3>
+                <span class="modal-close" onclick="closeModal('profile-pic-modal')">&times;</span>
+            </div>
+            <div class="profile-pic-options">
+                <button onclick="document.getElementById('profile-pic-input').click()" class="option-btn">
+                    📷 Upload Photo
+                </button>
+                <input type="file" id="profile-pic-input" accept="image/*" style="display:none;">
+                <button onclick="removeProfilePic()" class="option-btn danger">
+                    🗑️ Remove Current Photo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Highlight Modal -->
+    <div id="add-highlight-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>New Highlight</h3>
+                <span class="modal-close" onclick="closeModal('add-highlight-modal')">&times;</span>
+            </div>
+            <form id="add-highlight-form">
+                <div class="form-group">
+                    <label>Highlight Name</label>
+                    <input type="text" id="highlight-name" placeholder="Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Cover Image</label>
+                    <input type="file" id="highlight-cover" accept="image/*" required>
+                </div>
+                <button type="submit" class="modal-btn">Create Highlight</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <span class="modal-close" onclick="closeModal('settings-modal')">&times;</span>
+            </div>
+            <div class="settings-list">
+                <div class="setting-item" onclick="showChangePassword()">
+                    <span class="setting-icon">🔒</span>
+                    <span class="setting-text">Change Password</span>
+                    <span class="setting-arrow">›</span>
+                </div>
+                <div class="setting-item" onclick="showPrivacySettings()">
+                    <span class="setting-icon">🔐</span>
+                    <span class="setting-text">Privacy</span>
+                    <span class="setting-arrow">›</span>
+                </div>
+                <div class="setting-item" onclick="showNotificationSettings()">
+                    <span class="setting-icon">🔔</span>
+                    <span class="setting-text">Notifications</span>
+                    <span class="setting-arrow">›</span>
+                </div>
+                <div class="setting-item" onclick="showAccountSettings()">
+                    <span class="setting-icon">👤</span>
+                    <span class="setting-text">Account</span>
+                    <span class="setting-arrow">›</span>
+                </div>
+                <div class="setting-item" onclick="showHelpCenter()">
+                    <span class="setting-icon">❓</span>
+                    <span class="setting-text">Help</span>
+                    <span class="setting-arrow">›</span>
+                </div>
+                <div class="setting-item danger" onclick="logout()">
+                    <span class="setting-icon">🚪</span>
+                    <span class="setting-text">Logout</span>
+                    <span class="setting-arrow">›</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Followers Modal -->
+    <div id="followers-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Followers</h3>
+                <span class="modal-close" onclick="closeModal('followers-modal')">&times;</span>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="Search followers...">
+            </div>
+            <div id="followers-list" class="users-list"></div>
+        </div>
+    </div>
+
+    <!-- Following Modal -->
+    <div id="following-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Following</h3>
+                <span class="modal-close" onclick="closeModal('following-modal')">&times;</span>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="Search following...">
+            </div>
+            <div id="following-list" class="users-list"></div>
+        </div>
+    </div>
+
+    <script src="profile-page.js"></script>
+</body>
+</html>
