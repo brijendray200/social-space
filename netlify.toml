@@ -1,20 +1,10 @@
 [build]
-  command = "npm install"
   publish = "public"
   functions = "netlify/functions"
-
-[dev]
-  command = "node server.js"
-  port = 5000
 
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/uploads/*"
-  to = "/.netlify/functions/api/uploads/:splat"
   status = 200
 
 [[redirects]]
@@ -24,3 +14,4 @@
 
 [functions]
   node_bundler = "esbuild"
+  included_files = ["routes/**", "models/**", "middleware/**", "utils/**", "config/**"]
