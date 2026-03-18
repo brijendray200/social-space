@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,12 +11,14 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: Arial, sans-serif;
             background: #000;
             color: #fff;
             padding: 20px;
         }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -23,15 +26,18 @@
             padding: 30px;
             border-radius: 10px;
         }
+
         h1 {
             text-align: center;
             margin-bottom: 30px;
             color: #0095f6;
         }
+
         .profile-section {
             text-align: center;
             margin-bottom: 30px;
         }
+
         .profile-pic {
             width: 150px;
             height: 150px;
@@ -40,6 +46,7 @@
             border: 3px solid #0095f6;
             margin-bottom: 20px;
         }
+
         .upload-btn {
             padding: 12px 24px;
             background: #0095f6;
@@ -51,36 +58,45 @@
             font-weight: bold;
             margin: 10px;
         }
+
         .upload-btn:hover {
             background: #0081d6;
         }
+
         .remove-btn {
             background: #ed4956;
         }
+
         .remove-btn:hover {
             background: #c92a35;
         }
+
         input[type="file"] {
             display: none;
         }
+
         .message {
             padding: 15px;
             margin: 20px 0;
             border-radius: 8px;
             text-align: center;
         }
+
         .success {
             background: #d4edda;
             color: #155724;
         }
+
         .error {
             background: #f8d7da;
             color: #721c24;
         }
+
         .info {
             background: #d1ecf1;
             color: #0c5460;
         }
+
         .log-section {
             margin-top: 30px;
             padding: 20px;
@@ -91,34 +107,41 @@
             font-family: monospace;
             font-size: 12px;
         }
+
         .log-entry {
             margin: 5px 0;
             padding: 5px;
             border-left: 3px solid #0095f6;
             padding-left: 10px;
         }
+
         .log-error {
             border-left-color: #ed4956;
             color: #ed4956;
         }
+
         .log-success {
             border-left-color: #4caf50;
             color: #4caf50;
         }
+
         .credentials {
             background: #262626;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
         }
+
         .credentials p {
             margin: 5px 0;
         }
+
         .loading {
             display: none;
             text-align: center;
             padding: 20px;
         }
+
         .spinner {
             border: 4px solid #363636;
             border-top: 4px solid #0095f6;
@@ -128,16 +151,23 @@
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>📷 Test Photo Upload</h1>
-        
+
         <div class="credentials">
             <p><strong>Test Credentials:</strong></p>
             <p>Email: test@example.com</p>
@@ -146,7 +176,8 @@
         </div>
 
         <div class="profile-section">
-            <img id="profile-pic" class="profile-pic" src="https://via.placeholder.com/150/262626/ffffff?text=No+Photo" alt="Profile">
+            <img id="profile-pic" class="profile-pic" src="https://via.placeholder.com/150/262626/ffffff?text=No+Photo"
+                alt="Profile">
             <br>
             <button class="upload-btn" onclick="document.getElementById('file-input').click()">
                 📷 Upload Photo
@@ -170,7 +201,7 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:5000/api';
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000/api' : '/api';
         let token = localStorage.getItem('token');
 
         function log(message, type = 'info') {
@@ -218,7 +249,7 @@
                 if (response.ok) {
                     const user = await response.json();
                     log('✅ User data loaded', 'success');
-                    
+
                     if (user.profilePicture) {
                         document.getElementById('profile-pic').src = user.profilePicture;
                         log('✅ Profile picture loaded: ' + user.profilePicture, 'success');
@@ -236,7 +267,7 @@
         // Upload photo
         async function uploadPhoto(event) {
             const file = event.target.files[0];
-            
+
             if (!file) {
                 log('⚠️ No file selected', 'error');
                 return;
@@ -289,11 +320,11 @@
                 if (response.ok) {
                     showMessage('✅ Profile photo updated successfully!', 'success');
                     log('✅ Upload successful!', 'success');
-                    
+
                     // Update image
                     document.getElementById('profile-pic').src = data.profilePicture;
                     log('✅ Image updated: ' + data.profilePicture, 'success');
-                    
+
                     // Update localStorage
                     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
                     userInfo.profilePicture = data.profilePicture;
@@ -343,10 +374,10 @@
                 if (response.ok) {
                     showMessage('✅ Profile photo removed!', 'success');
                     log('✅ Photo removed successfully', 'success');
-                    
+
                     // Update image
                     document.getElementById('profile-pic').src = 'https://via.placeholder.com/150/262626/ffffff?text=No+Photo';
-                    
+
                     // Update localStorage
                     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
                     userInfo.profilePicture = '';
@@ -365,4 +396,5 @@
         }
     </script>
 </body>
+
 </html>

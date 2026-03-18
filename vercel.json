@@ -9,19 +9,15 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "server.js"
+      "dest": "/server.js"
     },
     {
       "src": "/uploads/(.*)",
-      "dest": "server.js"
-    },
-    {
-      "src": "/(.*\\.(css|js|html|jpg|jpeg|png|gif|svg|ico|json))",
-      "dest": "public/$1"
+      "dest": "/public/uploads/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "public/index.html"
+      "dest": "/server.js"
     }
   ]
 }

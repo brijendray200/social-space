@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000/api' : '/api';
 let token = localStorage.getItem('token');
 let currentUser = null;
 
@@ -11,7 +11,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }, 100);
         return;
     }
-    
+
     // Load profile if token exists
     loadProfile();
 });
@@ -53,19 +53,19 @@ function hideLoading() {
 async function loadProfile() {
     try {
         showLoading();
-        
+
         // Get user info from localStorage or fetch from API
         let userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-        
+
         console.log('Loading profile...', userInfo);
-        
+
         // If no userInfo, fetch from API
         if (!userInfo.id) {
             console.log('No userInfo in localStorage, fetching from API...');
             const response = await fetch(`${API_URL}/auth/me`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            
+
             if (response.ok) {
                 userInfo = await response.json();
                 localStorage.setItem('userInfo', JSON.stringify(userInfo));
@@ -74,21 +74,21 @@ async function loadProfile() {
                 console.error('Failed to fetch user info:', response.status);
             }
         }
-        
+
         currentUser = userInfo;
-        
+
         console.log('Setting profile data:', {
             username: userInfo.username,
             name: userInfo.name,
             bio: userInfo.bio,
             profilePicture: userInfo.profilePicture
         });
-        
+
         // Set profile info
         document.getElementById('header-username').textContent = userInfo.username || 'username';
         document.getElementById('profile-name').textContent = userInfo.name || userInfo.username || 'Add your name';
         document.getElementById('profile-bio').textContent = userInfo.bio || 'Add a bio to tell people about yourself...';
-        
+
         if (userInfo.website) {
             document.getElementById('profile-link').textContent = '🔗 ' + userInfo.website;
             document.getElementById('profile-link').href = userInfo.website;
@@ -96,7 +96,7 @@ async function loadProfile() {
         } else {
             document.getElementById('profile-link').style.display = 'none';
         }
-        
+
         if (userInfo.profilePicture) {
             console.log('Setting profile picture:', userInfo.profilePicture);
             document.getElementById('profile-picture').src = userInfo.profilePicture;
@@ -112,24 +112,24 @@ async function loadProfile() {
         const statsResponse = await fetch(`${API_URL}/users/stats`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        
+
         if (statsResponse.ok) {
             const stats = await statsResponse.json();
             console.log('Stats loaded:', stats);
-            
+
             document.getElementById('posts-stat').textContent = stats.postCount || 0;
             document.getElementById('followers-stat').textContent = stats.friendCount || 0;
             document.getElementById('following-stat').textContent = stats.friendCount || 0;
         }
 
         hideLoading();
-        
+
         // Load posts
         loadPosts();
-        
+
         // Load highlights
         loadHighlights();
-        
+
     } catch (error) {
         console.error('Failed to load profile:', error);
         hideLoading();
@@ -143,9 +143,9 @@ async function loadPosts() {
         const response = await fetch(`${API_URL}/posts/my-posts`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        
+
         const container = document.getElementById('posts-grid');
-        
+
         if (!response.ok) {
             container.innerHTML = `
                 <div class="empty-state">
@@ -155,9 +155,9 @@ async function loadPosts() {
             `;
             return;
         }
-        
+
         const posts = await response.json();
-        
+
         if (posts.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
@@ -172,7 +172,7 @@ async function loadPosts() {
         container.innerHTML = posts.map(post => {
             const media = post.media && post.media[0];
             const mediaUrl = media ? media.url : 'https://via.placeholder.com/300/262626/ffffff?text=No+Image';
-            
+
             return `
                 <div class="grid-item" onclick="viewPost('${post._id}')">
                     <img src="${mediaUrl}" alt="Post" onerror="this.src='https://via.placeholder.com/300/262626/ffffff?text=No+Image'">
@@ -205,7 +205,7 @@ document.querySelectorAll('.tab-item').forEach((tab, index) => {
     tab.addEventListener('click', () => {
         document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
-        
+
         if (index === 0) {
             loadPosts();
         } else if (index === 1) {
@@ -224,12 +224,12 @@ async function loadReels() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const reels = await response.json();
-        
+
         const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
         const myReels = reels.filter(r => r.user._id === userInfo.id);
-        
+
         const container = document.getElementById('posts-grid');
-        
+
         if (myReels.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
@@ -295,14 +295,14 @@ document.querySelectorAll('.nav-item').forEach((item, index) => {
 function openEditProfileModal() {
     const modal = document.getElementById('edit-profile-modal');
     modal.classList.add('active');
-    
+
     // Pre-fill form with current data
     document.getElementById('edit-name').value = currentUser.name || '';
     document.getElementById('edit-username').value = currentUser.username || '';
     document.getElementById('edit-bio').value = currentUser.bio || '';
     document.getElementById('edit-website').value = currentUser.website || '';
     document.getElementById('edit-location').value = currentUser.location || '';
-    
+
     updateBioCharCount();
 }
 
@@ -331,25 +331,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const name = document.getElementById('edit-name').value.trim();
             const username = document.getElementById('edit-username').value.trim();
             const bio = document.getElementById('edit-bio').value.trim();
             const website = document.getElementById('edit-website').value.trim();
             const location = document.getElementById('edit-location').value.trim();
-            
+
             if (!username) {
                 showError('Username is required');
                 return;
             }
-            
+
             if (username.length < 3) {
                 showError('Username must be at least 3 characters');
                 return;
             }
-            
+
             showLoading();
-            
+
             try {
                 const response = await fetch(`${API_URL}/users/profile`, {
                     method: 'PUT',
@@ -359,13 +359,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                     body: JSON.stringify({ name, username, bio, website, location })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (!response.ok) {
                     throw new Error(data.error || 'Failed to update profile');
                 }
-                
+
                 // Update localStorage
                 const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
                 userInfo.name = data.name;
@@ -374,14 +374,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 userInfo.website = data.website;
                 userInfo.location = data.location;
                 localStorage.setItem('userInfo', JSON.stringify(userInfo));
-                
+
                 currentUser = userInfo;
-                
+
                 // Update UI
                 document.getElementById('header-username').textContent = data.username;
                 document.getElementById('profile-name').textContent = data.name || data.username;
                 document.getElementById('profile-bio').textContent = data.bio || 'Bio text goes here...';
-                
+
                 if (data.website) {
                     document.getElementById('profile-link').textContent = '🔗 ' + data.website;
                     document.getElementById('profile-link').href = data.website;
@@ -389,11 +389,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     document.getElementById('profile-link').style.display = 'none';
                 }
-                
+
                 hideLoading();
                 closeEditProfileModal();
                 showSuccess('Profile updated successfully!');
-                
+
             } catch (error) {
                 hideLoading();
                 showError(error.message);
@@ -417,15 +417,15 @@ function closeChangePhotoModal() {
 // View profile photo
 function viewProfilePhoto() {
     closeChangePhotoModal();
-    
+
     const currentPhoto = document.getElementById('profile-picture').src;
-    
+
     // Check if it's a placeholder
     if (currentPhoto.includes('placeholder')) {
         showError('No profile photo to view');
         return;
     }
-    
+
     const modal = document.getElementById('view-photo-modal');
     const img = document.getElementById('view-photo-img');
     img.src = currentPhoto;
@@ -440,38 +440,38 @@ function closeViewPhotoModal() {
 // Upload profile photo
 async function uploadProfilePhoto(event) {
     const file = event.target.files[0];
-    
+
     console.log('Upload photo called, file:', file);
-    
+
     if (!file) {
         console.log('No file selected');
         return;
     }
-    
+
     // Validate file type
     if (!file.type.startsWith('image/')) {
         showError('Please select an image file');
         console.error('Invalid file type:', file.type);
         return;
     }
-    
+
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
         showError('Image size must be less than 5MB');
         console.error('File too large:', file.size);
         return;
     }
-    
+
     console.log('File validation passed, uploading...');
     showLoading();
     closeChangePhotoModal();
-    
+
     try {
         const formData = new FormData();
         formData.append('profilePicture', file);
-        
+
         console.log('Sending request to:', `${API_URL}/users/profile-picture`);
-        
+
         const response = await fetch(`${API_URL}/users/profile-picture`, {
             method: 'POST',
             headers: {
@@ -479,41 +479,41 @@ async function uploadProfilePhoto(event) {
             },
             body: formData
         });
-        
+
         console.log('Response status:', response.status);
-        
+
         const data = await response.json();
         console.log('Response data:', data);
-        
+
         if (!response.ok) {
             throw new Error(data.error || 'Failed to upload photo');
         }
-        
+
         // Update localStorage
         const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
         userInfo.profilePicture = data.profilePicture;
         localStorage.setItem('userInfo', JSON.stringify(userInfo));
-        
+
         currentUser = userInfo;
-        
+
         console.log('Updated userInfo:', userInfo);
-        
+
         // Update UI
         document.getElementById('profile-picture').src = data.profilePicture;
-        
+
         // Update nav profile pic
         const navPic = document.getElementById('nav-profile-pic');
         if (navPic) navPic.src = data.profilePicture;
-        
+
         hideLoading();
         showSuccess('Profile photo updated!');
-        
+
     } catch (error) {
         console.error('Upload error:', error);
         hideLoading();
         showError(error.message);
     }
-    
+
     // Reset input
     event.target.value = '';
 }
@@ -523,10 +523,10 @@ async function removeProfilePhoto() {
     if (!confirm('Are you sure you want to remove your profile photo?')) {
         return;
     }
-    
+
     showLoading();
     closeChangePhotoModal();
-    
+
     try {
         const response = await fetch(`${API_URL}/users/profile-picture`, {
             method: 'DELETE',
@@ -534,26 +534,26 @@ async function removeProfilePhoto() {
                 'Authorization': `Bearer ${token}`
             }
         });
-        
+
         const data = await response.json();
-        
+
         if (!response.ok) {
             throw new Error(data.error || 'Failed to remove photo');
         }
-        
+
         // Update localStorage
         const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
         userInfo.profilePicture = '';
         localStorage.setItem('userInfo', JSON.stringify(userInfo));
-        
+
         currentUser = userInfo;
-        
+
         // Update UI
         document.getElementById('profile-picture').src = 'https://via.placeholder.com/150';
-        
+
         hideLoading();
         showSuccess('Profile photo removed');
-        
+
     } catch (error) {
         hideLoading();
         showError(error.message);
@@ -564,7 +564,7 @@ async function removeProfilePhoto() {
 function shareProfile() {
     const username = currentUser.username || 'user';
     const url = `${window.location.origin}/instagram-profile.html?user=${username}`;
-    
+
     if (navigator.share) {
         navigator.share({
             title: `${username}'s Profile`,
@@ -635,7 +635,7 @@ function openBioEditor() {
     closeSettingsPage();
     const modal = document.getElementById('bio-editor-modal');
     modal.classList.add('active');
-    
+
     // Pre-fill with current bio
     const bioTextarea = document.getElementById('bio-editor-textarea');
     bioTextarea.value = currentUser.bio || '';
@@ -664,9 +664,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // Save bio only
 async function saveBioOnly() {
     const bio = document.getElementById('bio-editor-textarea').value.trim();
-    
+
     showLoading();
-    
+
     try {
         const response = await fetch(`${API_URL}/users/profile`, {
             method: 'PUT',
@@ -674,7 +674,7 @@ async function saveBioOnly() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 name: currentUser.name,
                 username: currentUser.username,
                 bio: bio,
@@ -682,27 +682,27 @@ async function saveBioOnly() {
                 location: currentUser.location
             })
         });
-        
+
         const data = await response.json();
-        
+
         if (!response.ok) {
             throw new Error(data.error || 'Failed to update bio');
         }
-        
+
         // Update localStorage
         const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
         userInfo.bio = data.bio;
         localStorage.setItem('userInfo', JSON.stringify(userInfo));
-        
+
         currentUser = userInfo;
-        
+
         // Update UI
         document.getElementById('profile-bio').textContent = data.bio || 'Bio text goes here...';
-        
+
         hideLoading();
         closeBioEditor();
         showSuccess('Bio updated successfully!');
-        
+
     } catch (error) {
         hideLoading();
         showError(error.message);
@@ -729,23 +729,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const currentPassword = document.getElementById('current-password').value;
             const newPassword = document.getElementById('new-password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
-            
+
             if (newPassword !== confirmPassword) {
                 showError('New passwords do not match');
                 return;
             }
-            
+
             if (newPassword.length < 6) {
                 showError('Password must be at least 6 characters');
                 return;
             }
-            
+
             showLoading();
-            
+
             try {
                 const response = await fetch(`${API_URL}/auth/change-password`, {
                     method: 'POST',
@@ -755,17 +755,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                     body: JSON.stringify({ currentPassword, newPassword })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (!response.ok) {
                     throw new Error(data.error || 'Failed to change password');
                 }
-                
+
                 hideLoading();
                 closePasswordChange();
                 showSuccess('Password changed successfully!');
-                
+
             } catch (error) {
                 hideLoading();
                 showError(error.message);
@@ -819,15 +819,15 @@ function logoutUser() {
 
 function loadHighlights() {
     const container = document.getElementById('highlights-list');
-    
+
     // Sample highlights (you can load from API later)
     const highlights = currentUser.highlights || [];
-    
+
     if (highlights.length === 0) {
         container.innerHTML = '';
         return;
     }
-    
+
     container.innerHTML = highlights.map(highlight => `
         <div class="highlight-item">
             <div class="highlight-circle">

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -202,11 +203,13 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Home Header -->
     <header class="home-header">
         <div class="logo">Instagram</div>
         <div class="header-icons">
+            <button onclick="window.location.href='public-space.html'" title="Public Space">🌍</button>
             <button>❤️</button>
             <button>💬</button>
         </div>
@@ -235,6 +238,9 @@
     <nav class="bottom-nav">
         <button class="nav-item active">
             <span class="nav-icon">🏠</span>
+        </button>
+        <button class="nav-item" onclick="window.location.href='public-space.html'">
+            <span class="nav-icon">🌍</span>
         </button>
         <button class="nav-item">
             <span class="nav-icon">🔍</span>
@@ -267,9 +273,9 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const storiesData = await response.json();
-                
+
                 const container = document.getElementById('stories-container');
-                
+
                 storiesData.forEach(userStories => {
                     const storyHTML = `
                         <div class="story-item">
@@ -295,9 +301,9 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
-                
+
                 const container = document.getElementById('feed-container');
-                
+
                 if (data.posts.length === 0) {
                     container.innerHTML = '<p style="text-align:center; padding:40px; color:#a8a8a8;">No posts yet</p>';
                     return;
@@ -357,4 +363,5 @@
         loadFeed();
     </script>
 </body>
+
 </html>

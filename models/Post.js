@@ -16,8 +16,14 @@ const postSchema = new mongoose.Schema({
       type: String,
       enum: ['image', 'video']
     },
-    url: String
+    url: String,
+    thumbnail: String
   }],
+  visibility: {
+    type: String,
+    enum: ['public', 'friends', 'private'],
+    default: 'public'
+  },
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

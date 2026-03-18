@@ -1,9 +1,9 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000/api' : '/api';
 let token = localStorage.getItem('token');
 let currentUser = null;
 
 // Wait for DOM to load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initializeApp();
 });
 
@@ -11,7 +11,7 @@ function initializeApp() {
     // Setup event listeners
     setupAuthListeners();
     setupPostListener();
-    
+
     // Check if already logged in
     if (token) {
         checkExistingSession();
@@ -21,11 +21,11 @@ function initializeApp() {
 function setupAuthListeners() {
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
-    
+
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
     }
-    
+
     if (registerForm) {
         registerForm.addEventListener('submit', handleRegister);
     }
@@ -111,13 +111,13 @@ function showMainApp(user) {
     const authSection = document.getElementById('auth-section');
     const mainSection = document.getElementById('main-section');
     const userInfo = document.getElementById('user-info');
-    
+
     if (authSection) authSection.style.display = 'none';
     if (mainSection) mainSection.style.display = 'block';
     if (userInfo) {
         userInfo.innerHTML = `<a href="profile.html">Welcome, ${user.username}!</a>`;
     }
-    
+
     loadPostLimit();
     loadPosts();
 }
@@ -127,13 +127,13 @@ function logout() {
     localStorage.removeItem('userInfo');
     token = null;
     currentUser = null;
-    
+
     const authSection = document.getElementById('auth-section');
     const mainSection = document.getElementById('main-section');
-    
+
     if (authSection) authSection.style.display = 'flex';
     if (mainSection) mainSection.style.display = 'none';
-    
+
     window.location.reload();
 }
 
@@ -144,7 +144,7 @@ async function handleCreatePost(e) {
 
     const formData = new FormData();
     formData.append('content', content);
-    
+
     for (let file of mediaFiles) {
         formData.append('media', file);
     }
@@ -176,7 +176,7 @@ async function loadPostLimit() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
-        
+
         const limitInfo = document.getElementById('post-limit-info');
         if (limitInfo) {
             limitInfo.innerHTML = `
@@ -185,10 +185,10 @@ async function loadPostLimit() {
                 ${data.message}
             `;
         }
-        
+
         const createPostSection = document.getElementById('create-post-section');
         const postButton = document.querySelector('#post-form button[type="submit"]');
-        
+
         if (!data.canPost) {
             if (createPostSection) createPostSection.style.opacity = '0.5';
             if (postButton) postButton.disabled = true;
@@ -207,10 +207,10 @@ async function loadPosts() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
-        
+
         const postsContainer = document.getElementById('posts-container');
         if (!postsContainer) return;
-        
+
         postsContainer.innerHTML = '';
 
         if (!data.posts || data.posts.length === 0) {
@@ -234,7 +234,7 @@ async function loadPosts() {
 function createPostElement(post) {
     const div = document.createElement('div');
     div.className = 'post';
-    
+
     const mediaHTML = post.media && post.media.length > 0 ? post.media.map(m => {
         if (m.type === 'image') {
             return `<img src="${m.url}" alt="Post media">`;
@@ -283,7 +283,7 @@ function createPostElement(post) {
             </div>
         </div>
     `;
-    
+
     return div;
 }
 
@@ -311,7 +311,7 @@ function toggleComments(postId) {
 async function addComment(postId) {
     const input = document.getElementById(`comment-input-${postId}`);
     if (!input) return;
-    
+
     const text = input.value.trim();
     if (!text) return;
 
@@ -369,9 +369,9 @@ function showMessage(message, type) {
     messageDiv.style.padding = '15px 25px';
     messageDiv.style.borderRadius = '8px';
     messageDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-    
+
     document.body.appendChild(messageDiv);
-    
+
     setTimeout(() => {
         messageDiv.remove();
     }, 3000);
@@ -382,7 +382,7 @@ async function checkExistingSession() {
         const response = await fetch(`${API_URL}/posts/check-limit`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        
+
         if (response.ok) {
             const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
             if (userInfo.username) {
@@ -401,7 +401,7 @@ async function checkExistingSession() {
 async function addComment(postId) {
     const input = document.getElementById(`comment-input-${postId}`);
     if (!input) return;
-    
+
     const text = input.value.trim();
     if (!text) return;
 
@@ -459,9 +459,9 @@ function showMessage(message, type) {
     messageDiv.style.padding = '15px 25px';
     messageDiv.style.borderRadius = '8px';
     messageDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-    
+
     document.body.appendChild(messageDiv);
-    
+
     setTimeout(() => {
         messageDiv.remove();
     }, 3000);
@@ -472,7 +472,7 @@ async function checkExistingSession() {
         const response = await fetch(`${API_URL}/posts/check-limit`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        
+
         if (response.ok) {
             const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
             if (userInfo.username) {
@@ -490,14 +490,14 @@ async function checkExistingSession() {
 
 
 // File preview functionality
-document.getElementById('post-media').addEventListener('change', function(e) {
+document.getElementById('post-media').addEventListener('change', function (e) {
     const files = e.target.files;
     const preview = document.getElementById('file-preview');
     preview.innerHTML = '';
-    
+
     Array.from(files).forEach(file => {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const div = document.createElement('div');
             if (file.type.startsWith('image/')) {
                 div.innerHTML = `<img src="${e.target.result}" alt="Preview">`;

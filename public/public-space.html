@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Space - Social Space</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="public-space.css">
+    <style>
+        .page-wrapper {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 0 20px 100px;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-premium {
+            font-size: 22px;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-btns {
+            display: flex;
+            gap: 15px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-glass-content {
+            width: 100%;
+            max-width: 550px;
+            padding: 32px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .file-drop-zone {
+            border: 2px dashed var(--glass-border);
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-drop-zone:hover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .preview-grid-premium {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .preview-item {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+
+        .preview-item img,
+        .preview-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="premium-nav">
+        <div class="nav-content">
+            <div class="logo-premium" onclick="window.location.href='home.html'">Social Space</div>
+            <div class="nav-btns">
+                <button class="btn-glass" onclick="window.location.href='home.html'">🏠</button>
+                <button class="btn-glass" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+        <!-- Progress Hub (Limits) -->
+        <section class="progress-hub">
+            <div class="limit-visualizer">
+                <div class="limit-progress-ring">
+                    <svg viewBox="0 0 36 36" style="transform: rotate(-90deg);">
+                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                            fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2.5"></path>
+                        <path id="progress-circle"
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                            fill="none" stroke="url(#gradient)" stroke-width="2.5" stroke-dasharray="0, 100"></path>
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#6366f1" />
+                                <stop offset="100%" stop-color="#ec4899" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div style="position: absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-weight:800; font-size:14px;"
+                        id="limit-num">0/0</div>
+                </div>
+                <div class="progress-text">
+                    <h2 id="limit-status-text">Public Influence</h2>
+                    <p id="limit-sub-text" style="color: var(--text-muted); font-size:14px;">Connect with more friends
+                        to unlock unlimited posts.</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-fill" id="progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Post Entry -->
+        <div class="premium-trigger" id="create-trigger" onclick="openPostModal()">
+            <div
+                style="width: 44px; height: 44px; border-radius: 50%; background: var(--primary-gradient); padding: 2px;">
+                <div id="user-avatar-small"
+                    style="width: 100%; height: 100%; border-radius: 50%; background: #1e293b; display: flex; align-items: center; justify-content: center; font-size: 20px; overflow: hidden;">
+                    👤
+                </div>
+            </div>
+            <div style="color: var(--text-muted); font-size: 16px;">What are you thinking?</div>
+            <div style="margin-left: auto; font-size: 20px;">📸</div>
+        </div>
+
+        <!-- Feed -->
+        <div id="public-feed" style="margin-top: 40px;">
+            <!-- Skeleton items will show here -->
+        </div>
+    </div>
+
+    <!-- Premium Modal -->
+    <div id="post-modal" class="modal premium-modal">
+        <div class="modal-glass-content">
+            <span class="modal-close" onclick="closePostModal()">&times;</span>
+            <h2 style="margin-bottom: 24px;">New Public Post</h2>
+            <form id="create-post-form">
+                <textarea class="premium-input" id="post-content" placeholder="Share your story with the world..."
+                    required rows="4"></textarea>
+
+                <div class="file-drop-zone" onclick="document.getElementById('file-input').click()">
+                    <div style="font-size: 40px; margin-bottom: 10px;">✨</div>
+                    <div style="font-weight: 700;">Add Visuals</div>
+                    <div style="color: var(--text-muted); font-size: 14px;">Drag & drop or tap to browse</div>
+                    <input type="file" id="file-input" multiple accept="image/*,video/*" style="display: none;"
+                        onchange="handleFileSelect(event)">
+                </div>
+
+                <div id="file-previews" class="preview-grid-premium"></div>
+
+                <button type="submit" class="btn-primary-gradient" id="submit-post-btn"
+                    style="width: 100%; margin-top: 24px;">Share Now</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="public-space.js"></script>
+    <script>
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'index.html';
+        }
+
+        function openPostModal() {
+            document.getElementById('post-modal').classList.add('active');
+        }
+
+        function closePostModal() {
+            document.getElementById('post-modal').classList.remove('active');
+            document.getElementById('create-post-form').reset();
+            document.getElementById('file-previews').innerHTML = '';
+            selectedFiles = [];
+        }
+    </script>
+</body>
+
+</html>

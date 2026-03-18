@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000/api' : '/api';
 let token = localStorage.getItem('token');
 let currentUser = null;
 let currentChatUser = null;
@@ -82,14 +82,14 @@ function showRegister() {
 function showMainApp() {
     document.getElementById('auth-section').style.display = 'none';
     document.getElementById('main-section').style.display = 'block';
-    
+
     // Initialize profile photo in create post section
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
     const createPostAvatar = document.querySelector('.create-post-header .user-avatar');
     if (createPostAvatar && userInfo.profilePicture) {
         createPostAvatar.innerHTML = `<img src="${userInfo.profilePicture}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
     }
-    
+
     loadAllData();
 }
 
@@ -104,7 +104,7 @@ function logout() {
 // Page Navigation
 function showPage(page) {
     document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none');
-    
+
     if (page === 'home') {
         document.getElementById('home-page').style.display = 'block';
         loadPosts();
@@ -124,7 +124,7 @@ async function loadAllData() {
     loadNotifications();
     loadConversations();
     loadPostLimit();
-    
+
     // Refresh every 30 seconds
     setInterval(() => {
         loadNotifications();
@@ -139,7 +139,7 @@ async function loadStories() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const storiesData = await response.json();
-        
+
         const container = document.getElementById('stories-container');
         container.innerHTML = storiesData.map(userStories => {
             let avatarHTML;
@@ -148,7 +148,7 @@ async function loadStories() {
             } else {
                 avatarHTML = userStories.user.username.charAt(0).toUpperCase();
             }
-            
+
             return `
                 <div class="story-item" onclick="viewStory('${userStories.user._id}')">
                     <div class="story-ring">
@@ -169,7 +169,7 @@ function showAddStoryModal() {
 
 document.getElementById('story-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const file = document.getElementById('story-file').files[0];
     const caption = document.getElementById('story-caption').value;
 
@@ -210,9 +210,9 @@ async function loadPosts() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
-        
+
         const container = document.getElementById('posts-feed');
-        
+
         if (data.posts.length === 0) {
             container.innerHTML = '<p class="empty-text">No posts yet. Be the first to post!</p>';
             return;
@@ -227,7 +227,7 @@ async function loadPosts() {
 function createPostHTML(post) {
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
     const isLiked = post.likes.includes(userInfo.id);
-    
+
     // Determine avatar display
     let avatarHTML;
     if (post.user._id === userInfo.id && userInfo.profilePicture) {
@@ -237,7 +237,7 @@ function createPostHTML(post) {
     } else {
         avatarHTML = post.user.username.charAt(0).toUpperCase();
     }
-    
+
     return `
         <div class="post-card">
             <div class="post-header">
@@ -250,11 +250,11 @@ function createPostHTML(post) {
             <div class="post-content">${post.content}</div>
             ${post.media.length > 0 ? `
                 <div class="post-media-grid">
-                    ${post.media.map(m => 
-                        m.type === 'image' 
-                            ? `<img src="${m.url}" alt="Post media">`
-                            : `<video src="${m.url}" controls></video>`
-                    ).join('')}
+                    ${post.media.map(m =>
+        m.type === 'image'
+            ? `<img src="${m.url}" alt="Post media">`
+            : `<video src="${m.url}" controls></video>`
+    ).join('')}
                 </div>
             ` : ''}
             <div class="post-actions">
@@ -287,14 +287,14 @@ function showCreatePostModal() {
     document.getElementById('create-post-modal').classList.add('active');
 }
 
-document.getElementById('post-files').addEventListener('change', function(e) {
+document.getElementById('post-files').addEventListener('change', function (e) {
     const files = e.target.files;
     const preview = document.getElementById('post-preview');
     preview.innerHTML = '';
-    
+
     Array.from(files).forEach(file => {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const div = document.createElement('div');
             if (file.type.startsWith('image/')) {
                 div.innerHTML = `<img src="${e.target.result}">`;
@@ -309,13 +309,13 @@ document.getElementById('post-files').addEventListener('change', function(e) {
 
 document.getElementById('create-post-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const content = document.getElementById('post-text').value;
     const files = document.getElementById('post-files').files;
 
     const formData = new FormData();
     formData.append('content', content);
-    
+
     Array.from(files).forEach(file => {
         formData.append('media', file);
     });
@@ -363,7 +363,7 @@ function toggleComments(postId) {
 async function addComment(postId) {
     const input = document.getElementById(`comment-input-${postId}`);
     const text = input.value.trim();
-    
+
     if (!text) return;
 
     try {
@@ -375,7 +375,7 @@ async function addComment(postId) {
             },
             body: JSON.stringify({ text })
         });
-        
+
         input.value = '';
         loadPosts();
     } catch (error) {
@@ -403,12 +403,12 @@ async function loadPostLimit() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
-        
+
         document.getElementById('post-limit-info').innerHTML = `
             <strong>Friends: ${data.friendCount}</strong><br>
             ${data.message}
         `;
-        
+
         document.getElementById('friends-count').textContent = data.friendCount;
     } catch (error) {
         console.error('Failed to load post limit:', error);
@@ -422,11 +422,11 @@ async function loadNotifications() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
-        
+
         document.getElementById('notif-badge').textContent = data.unreadCount;
-        
+
         const container = document.getElementById('notifications-list');
-        
+
         if (data.notifications.length === 0) {
             container.innerHTML = '<p class="empty-text">No notifications</p>';
             return;
@@ -448,10 +448,10 @@ async function loadNotifications() {
 function toggleNotifications() {
     const dropdown = document.getElementById('notifications-dropdown');
     const isVisible = dropdown.style.display === 'block';
-    
+
     // Close all dropdowns
     document.querySelectorAll('.dropdown-panel').forEach(d => d.style.display = 'none');
-    
+
     if (!isVisible) {
         dropdown.style.display = 'block';
         loadNotifications();
@@ -489,16 +489,16 @@ async function loadConversations() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const conversations = await response.json();
-        
+
         const unreadResponse = await fetch(`${API_URL}/messages/unread/count`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const unreadData = await unreadResponse.json();
-        
+
         document.getElementById('msg-badge').textContent = unreadData.count;
-        
+
         const container = document.getElementById('conversations-list');
-        
+
         if (conversations.length === 0) {
             container.innerHTML = '<p class="empty-text">No messages</p>';
             return;
@@ -511,7 +511,7 @@ async function loadConversations() {
             } else {
                 avatarHTML = conv._id.username.charAt(0).toUpperCase();
             }
-            
+
             return `
                 <div class="conv-item" onclick="openChat('${conv._id._id}', '${conv._id.username}')">
                     <div class="conv-avatar">${avatarHTML}</div>
@@ -530,10 +530,10 @@ async function loadConversations() {
 function toggleMessages() {
     const dropdown = document.getElementById('messages-dropdown');
     const isVisible = dropdown.style.display === 'block';
-    
+
     // Close all dropdowns
     document.querySelectorAll('.dropdown-panel').forEach(d => d.style.display = 'none');
-    
+
     if (!isVisible) {
         dropdown.style.display = 'block';
         loadConversations();
@@ -544,10 +544,10 @@ async function openChat(userId, username) {
     currentChatUser = userId;
     document.getElementById('chat-username').textContent = username;
     document.getElementById('chat-modal').classList.add('active');
-    
+
     // Close dropdowns
     document.querySelectorAll('.dropdown-panel').forEach(d => d.style.display = 'none');
-    
+
     loadChatMessages(userId);
 }
 
@@ -557,16 +557,16 @@ async function loadChatMessages(userId) {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const messages = await response.json();
-        
+
         const container = document.getElementById('chat-messages');
         const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-        
+
         container.innerHTML = messages.map(msg => `
             <div class="chat-message ${msg.sender._id === userInfo.id ? 'sent' : ''}">
                 <div class="chat-bubble">${msg.message}</div>
             </div>
         `).join('');
-        
+
         container.scrollTop = container.scrollHeight;
     } catch (error) {
         console.error('Failed to load messages:', error);
@@ -575,10 +575,10 @@ async function loadChatMessages(userId) {
 
 document.getElementById('chat-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const input = document.getElementById('chat-input');
     const message = input.value.trim();
-    
+
     if (!message) return;
 
     try {
@@ -593,7 +593,7 @@ document.getElementById('chat-form').addEventListener('submit', async (e) => {
                 message
             })
         });
-        
+
         input.value = '';
         loadChatMessages(currentChatUser);
     } catch (error) {
@@ -608,9 +608,9 @@ async function loadReels() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const reels = await response.json();
-        
+
         const container = document.getElementById('reels-feed');
-        
+
         if (reels.length === 0) {
             container.innerHTML = '<p class="empty-text">No reels yet</p>';
             return;
@@ -623,7 +623,7 @@ async function loadReels() {
             } else {
                 avatarHTML = reel.user.username.charAt(0).toUpperCase();
             }
-            
+
             return `
                 <div class="reel-card">
                     <div class="post-header">
@@ -660,7 +660,7 @@ function showAddReelModal() {
 
 document.getElementById('reel-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const video = document.getElementById('reel-video').files[0];
     const caption = document.getElementById('reel-caption').value;
 
@@ -710,10 +710,10 @@ async function likeReel(reelId) {
 async function loadProfile() {
     try {
         const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-        
+
         document.getElementById('profile-username').textContent = userInfo.username;
         document.getElementById('profile-email').textContent = userInfo.email;
-        
+
         // Load profile picture
         const profileImg = document.getElementById('profile-avatar-img');
         if (profileImg) {
@@ -723,16 +723,16 @@ async function loadProfile() {
                 profileImg.src = 'https://via.placeholder.com/100/667eea/ffffff?text=👤';
             }
         }
-        
+
         const statsResponse = await fetch(`${API_URL}/users/stats`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const stats = await statsResponse.json();
-        
+
         document.getElementById('profile-friends').textContent = stats.friendCount;
         document.getElementById('profile-posts').textContent = stats.postCount;
         document.getElementById('profile-likes').textContent = stats.totalLikes;
-        
+
         loadUserPosts();
         loadUserFriends();
     } catch (error) {
@@ -746,9 +746,9 @@ async function loadUserPosts() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const posts = await response.json();
-        
+
         const container = document.getElementById('user-posts');
-        
+
         if (posts.length === 0) {
             container.innerHTML = '<p class="empty-text">No posts yet</p>';
             return;
@@ -766,9 +766,9 @@ async function loadUserFriends() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const friends = await response.json();
-        
+
         const container = document.getElementById('user-friends');
-        
+
         if (friends.length === 0) {
             container.innerHTML = '<p class="empty-text">No friends yet</p>';
             return;
@@ -794,7 +794,7 @@ async function loadUserFriends() {
 function showProfileTab(tab) {
     document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.profile-tab-content').forEach(c => c.style.display = 'none');
-    
+
     if (tab === 'posts') {
         document.querySelectorAll('.profile-tab')[0].classList.add('active');
         document.getElementById('profile-posts-tab').style.display = 'block';
@@ -824,9 +824,9 @@ function showToast(message, type) {
         animation: slideIn 0.3s ease;
     `;
     toast.textContent = message;
-    
+
     document.body.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => toast.remove(), 300);
@@ -879,13 +879,13 @@ document.getElementById('forgot-password-form').addEventListener('submit', async
         const data = await response.json();
         if (response.ok) {
             showToast('OTP sent to your email!', 'success');
-            
+
             // Show OTP in console for development
             if (data.otp) {
                 console.log('🔑 OTP:', data.otp);
                 showToast(`Development Mode - OTP: ${data.otp}`, 'info');
             }
-            
+
             // Show verify OTP form
             document.getElementById('forgot-password-form').style.display = 'none';
             document.getElementById('verify-otp-form').style.display = 'block';
@@ -912,7 +912,7 @@ document.getElementById('verify-otp-form').addEventListener('submit', async (e) 
         const data = await response.json();
         if (response.ok) {
             showToast('OTP verified successfully!', 'success');
-            
+
             // Show reset password form
             document.getElementById('verify-otp-form').style.display = 'none';
             document.getElementById('reset-password-form').style.display = 'block';
@@ -945,23 +945,23 @@ document.getElementById('reset-password-form').addEventListener('submit', async 
         const response = await fetch(`${API_URL}/auth/reset-password`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                email: forgotPasswordEmail, 
-                otp, 
-                newPassword 
+            body: JSON.stringify({
+                email: forgotPasswordEmail,
+                otp,
+                newPassword
             })
         });
 
         const data = await response.json();
         if (response.ok) {
             showToast('Password reset successfully! Please login.', 'success');
-            
+
             // Reset forms and show login
             document.getElementById('reset-password-form').reset();
             document.getElementById('verify-otp-form').reset();
             document.getElementById('forgot-password-form').reset();
             forgotPasswordEmail = '';
-            
+
             setTimeout(() => {
                 showLogin();
             }, 2000);
@@ -991,13 +991,13 @@ async function resendOTP() {
         const data = await response.json();
         if (response.ok) {
             showToast('New OTP sent to your email!', 'success');
-            
+
             // Show OTP in console for development
             if (data.otp) {
                 console.log('🔑 New OTP:', data.otp);
                 showToast(`Development Mode - OTP: ${data.otp}`, 'info');
             }
-            
+
             // Clear OTP input
             document.getElementById('otp-input').value = '';
         } else {
@@ -1021,24 +1021,24 @@ function closeProfilePhotoModal() {
 
 async function uploadProfilePhotoMain(event) {
     const file = event.target.files[0];
-    
+
     if (!file) return;
-    
+
     // Validate file type
     if (!file.type.startsWith('image/')) {
         showToast('Please select an image file', 'error');
         return;
     }
-    
+
     // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
         showToast('Image size must be less than 5MB', 'error');
         return;
     }
-    
+
     const formData = new FormData();
     formData.append('profilePicture', file);
-    
+
     try {
         const response = await fetch(`${API_URL}/users/profile-picture`, {
             method: 'POST',
@@ -1047,28 +1047,28 @@ async function uploadProfilePhotoMain(event) {
             },
             body: formData
         });
-        
+
         const data = await response.json();
-        
+
         if (response.ok) {
             showToast('Profile photo updated successfully!', 'success');
-            
+
             // Update profile picture in UI
             const profileImg = document.getElementById('profile-avatar-img');
             if (profileImg) {
                 profileImg.src = data.profilePicture;
             }
-            
+
             // Update user info in localStorage
             const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
             userInfo.profilePicture = data.profilePicture;
             localStorage.setItem('userInfo', JSON.stringify(userInfo));
-            
+
             // Update all avatars on the page
             updateAllAvatars(data.profilePicture);
-            
+
             closeProfilePhotoModal();
-            
+
             // Reload current page to show updated photo
             const currentPage = document.querySelector('.page-content[style*="display: block"]');
             if (currentPage && currentPage.id === 'home-page') {
@@ -1076,7 +1076,7 @@ async function uploadProfilePhotoMain(event) {
             } else if (currentPage && currentPage.id === 'profile-page') {
                 loadProfile();
             }
-            
+
             // Reset file input
             event.target.value = '';
         } else {
@@ -1092,7 +1092,7 @@ async function removeProfilePhotoMain() {
     if (!confirm('Are you sure you want to remove your profile photo?')) {
         return;
     }
-    
+
     try {
         const response = await fetch(`${API_URL}/users/profile-picture`, {
             method: 'DELETE',
@@ -1100,28 +1100,28 @@ async function removeProfilePhotoMain() {
                 'Authorization': `Bearer ${token}`
             }
         });
-        
+
         const data = await response.json();
-        
+
         if (response.ok) {
             showToast('Profile photo removed successfully!', 'success');
-            
+
             // Update profile picture in UI to placeholder
             const profileImg = document.getElementById('profile-avatar-img');
             if (profileImg) {
                 profileImg.src = 'https://via.placeholder.com/100/667eea/ffffff?text=👤';
             }
-            
+
             // Update user info in localStorage
             const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
             userInfo.profilePicture = null;
             localStorage.setItem('userInfo', JSON.stringify(userInfo));
-            
+
             // Update all avatars on the page
             updateAllAvatars(null);
-            
+
             closeProfilePhotoModal();
-            
+
             // Reload current page to show updated photo
             const currentPage = document.querySelector('.page-content[style*="display: block"]');
             if (currentPage && currentPage.id === 'home-page') {
@@ -1141,7 +1141,7 @@ async function removeProfilePhotoMain() {
 // Helper function to update all avatar instances
 function updateAllAvatars(profilePicture) {
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-    
+
     // Update create post avatar
     const createPostAvatar = document.querySelector('.create-post-header .user-avatar');
     if (createPostAvatar) {

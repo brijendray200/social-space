@@ -23,8 +23,12 @@ app.use(express.static('public'));
 
 // Create uploads directory
 const fs = require('fs');
-if (!fs.existsSync('uploads')) {
-  fs.mkdirSync('uploads');
+try {
+  if (!fs.existsSync('uploads')) {
+    fs.mkdirSync('uploads');
+  }
+} catch (err) {
+  console.log('Temporary directory creation skipped (expected on Vercel)');
 }
 
 // Routes

@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000/api' : '/api';
 let token = localStorage.getItem('token');
 
 if (!token) {
@@ -12,14 +12,14 @@ async function loadFriendRequests() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const requests = await response.json();
-        
+
         const container = document.getElementById('friend-requests');
         const badge = document.getElementById('request-badge');
         const pendingCount = document.getElementById('pending-count');
-        
+
         badge.textContent = requests.length;
         pendingCount.textContent = requests.length;
-        
+
         if (requests.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
@@ -59,7 +59,7 @@ async function acceptFriendRequest(userId) {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
-        
+
         showNotification(data.message, 'success');
         loadFriendRequests();
         loadFriends();
@@ -76,7 +76,7 @@ async function rejectFriendRequest(userId) {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
-        
+
         showNotification(data.message, 'success');
         loadFriendRequests();
         updateStats();
@@ -90,7 +90,7 @@ let searchTimeout;
 document.getElementById('search-input').addEventListener('input', (e) => {
     clearTimeout(searchTimeout);
     const query = e.target.value.trim();
-    
+
     if (query.length < 2) {
         document.getElementById('search-results').innerHTML = `
             <div class="empty-state">
@@ -110,9 +110,9 @@ async function searchUsers(query) {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const users = await response.json();
-        
+
         const container = document.getElementById('search-results');
-        
+
         if (users.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
@@ -149,7 +149,7 @@ async function sendFriendRequest(userId) {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
-        
+
         if (response.ok) {
             showNotification(data.message, 'success');
         } else {
@@ -166,14 +166,14 @@ async function loadFriends() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const friends = await response.json();
-        
+
         const container = document.getElementById('friends-list');
         const badge = document.getElementById('friends-badge');
         const totalFriends = document.getElementById('total-friends');
-        
+
         badge.textContent = friends.length;
         totalFriends.textContent = friends.length;
-        
+
         if (friends.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
@@ -205,14 +205,14 @@ async function loadFriends() {
 
 async function removeFriend(userId) {
     if (!confirm('Are you sure you want to remove this friend?')) return;
-    
+
     try {
         const response = await fetch(`${API_URL}/users/friend/${userId}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
-        
+
         showNotification(data.message, 'success');
         loadFriends();
         updateStats();
@@ -222,7 +222,7 @@ async function removeFriend(userId) {
 }
 
 function scrollToSection(sectionId) {
-    document.getElementById(sectionId).scrollIntoView({ 
+    document.getElementById(sectionId).scrollIntoView({
         behavior: 'smooth',
         block: 'start'
     });
@@ -244,9 +244,9 @@ function showNotification(message, type) {
         z-index: 10000;
         animation: slideIn 0.3s ease;
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
         notification.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => notification.remove(), 300);

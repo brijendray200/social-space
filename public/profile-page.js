@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000/api' : '/api';
 let token = localStorage.getItem('token');
 let currentTab = 'posts';
 
@@ -10,18 +10,18 @@ if (!token) {
 async function loadProfile() {
     try {
         const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-        
+
         // Set basic info
         document.getElementById('profile-username').textContent = userInfo.username || 'username';
         document.getElementById('profile-name').textContent = userInfo.name || 'Name';
         document.getElementById('profile-bio').textContent = userInfo.bio || 'Bio goes here...';
-        
+
         if (userInfo.website) {
             document.getElementById('profile-website').textContent = userInfo.website;
             document.getElementById('profile-website').href = userInfo.website;
             document.getElementById('profile-website').style.display = 'block';
         }
-        
+
         if (userInfo.profilePicture) {
             document.getElementById('profile-pic').src = userInfo.profilePicture;
         }
@@ -31,7 +31,7 @@ async function loadProfile() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const stats = await statsResponse.json();
-        
+
         document.getElementById('posts-count').textContent = stats.postCount || 0;
         document.getElementById('followers-count').textContent = stats.friendCount || 0;
         document.getElementById('following-count').textContent = stats.friendCount || 0;
@@ -51,9 +51,9 @@ async function loadPosts() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const posts = await response.json();
-        
+
         const container = document.getElementById('posts-grid');
-        
+
         if (posts.length === 0) {
             container.innerHTML = `
                 <div class="empty-state" style="grid-column: 1/-1;">
@@ -69,10 +69,10 @@ async function loadPosts() {
             return `
                 <div class="grid-item" onclick="viewPost('${post._id}')">
                     ${media ? (
-                        media.type === 'image' 
-                            ? `<img src="${media.url}" alt="Post">`
-                            : `<video src="${media.url}"></video>`
-                    ) : `<div style="background:#f0f0f0; width:100%; height:100%;"></div>`}
+                    media.type === 'image'
+                        ? `<img src="${media.url}" alt="Post">`
+                        : `<video src="${media.url}"></video>`
+                ) : `<div style="background:#f0f0f0; width:100%; height:100%;"></div>`}
                     <div class="grid-item-overlay">
                         <span>❤️ ${post.likes.length}</span>
                         <span>💬 ${post.comments.length}</span>
@@ -92,12 +92,12 @@ async function loadReels() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const reels = await response.json();
-        
+
         const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
         const myReels = reels.filter(r => r.user._id === userInfo.id);
-        
+
         const container = document.getElementById('reels-grid');
-        
+
         if (myReels.length === 0) {
             container.innerHTML = `
                 <div class="empty-state" style="grid-column: 1/-1;">
@@ -126,7 +126,7 @@ async function loadReels() {
 async function loadHighlights() {
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
     const highlights = userInfo.highlights || [];
-    
+
     const container = document.getElementById('highlights-container');
     container.innerHTML = highlights.map(h => `
         <div class="highlight-item">
@@ -141,7 +141,7 @@ async function loadHighlights() {
 // Switch Tabs
 function switchTab(tab) {
     currentTab = tab;
-    
+
     // Update tab buttons
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -149,12 +149,12 @@ function switchTab(tab) {
             btn.classList.add('active');
         }
     });
-    
+
     // Hide all grids
     document.querySelectorAll('.content-grid').forEach(grid => {
         grid.style.display = 'none';
     });
-    
+
     // Show selected grid
     if (tab === 'posts') {
         document.getElementById('posts-grid').style.display = 'grid';
@@ -184,19 +184,19 @@ function switchTab(tab) {
 // Edit Profile
 function showEditProfileModal() {
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-    
+
     document.getElementById('edit-name').value = userInfo.name || '';
     document.getElementById('edit-username').value = userInfo.username || '';
     document.getElementById('edit-bio').value = userInfo.bio || '';
     document.getElementById('edit-website').value = userInfo.website || '';
     document.getElementById('edit-location').value = userInfo.location || '';
-    
+
     document.getElementById('edit-profile-modal').classList.add('active');
 }
 
 document.getElementById('edit-profile-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const data = {
         name: document.getElementById('edit-name').value,
         username: document.getElementById('edit-username').value,
@@ -251,11 +251,11 @@ document.getElementById('profile-pic-input').addEventListener('change', async (e
         if (response.ok) {
             const data = await response.json();
             document.getElementById('profile-pic').src = data.profilePicture;
-            
+
             const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
             userInfo.profilePicture = data.profilePicture;
             localStorage.setItem('userInfo', JSON.stringify(userInfo));
-            
+
             showToast('Profile picture updated!', 'success');
             closeModal('profile-pic-modal');
         }
@@ -288,7 +288,7 @@ function showAddHighlightModal() {
 
 document.getElementById('add-highlight-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const title = document.getElementById('highlight-name').value;
     const cover = document.getElementById('highlight-cover').files[0];
 
@@ -356,9 +356,9 @@ async function loadFollowers() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const friends = await response.json();
-        
+
         const container = document.getElementById('followers-list');
-        
+
         if (friends.length === 0) {
             container.innerHTML = '<div class="empty-state"><p>No followers yet</p></div>';
             return;
@@ -387,7 +387,7 @@ async function loadFollowing() {
 function shareProfile() {
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
     const profileUrl = `${window.location.origin}/profile/${userInfo.username}`;
-    
+
     if (navigator.share) {
         navigator.share({
             title: `${userInfo.username}'s Profile`,
@@ -420,9 +420,9 @@ function showToast(message, type) {
         animation: slideIn 0.3s ease;
     `;
     toast.textContent = message;
-    
+
     document.body.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => toast.remove(), 300);

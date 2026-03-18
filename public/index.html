@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Social Space - Connect with Friends</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="main-style.css">
+    <link rel="stylesheet" href="public-space.css">
 </head>
+
 <body>
     <!-- Auth Section -->
     <div id="auth-section" class="auth-container">
@@ -13,12 +17,12 @@
             <div class="auth-logo">🌟</div>
             <h1>Social Space</h1>
             <p class="auth-subtitle">Connect, Share, and Grow Together</p>
-            
+
             <div class="auth-tabs">
                 <button class="auth-tab active" onclick="showLogin()">Login</button>
                 <button class="auth-tab" onclick="showRegister()">Register</button>
             </div>
-            
+
             <form id="login-form" class="auth-form">
                 <div class="input-group">
                     <span class="input-icon">📧</span>
@@ -95,12 +99,12 @@
                     <span class="logo-icon">🌟</span>
                     <span class="logo-text">Social Space</span>
                 </div>
-                
+
                 <div class="navbar-search">
                     <span class="search-icon">🔍</span>
                     <input type="text" id="global-search" placeholder="Search users, posts...">
                 </div>
-                
+
                 <div class="navbar-actions">
                     <button class="nav-icon-btn" onclick="showPage('home')" title="Home">
                         <span class="icon">🏠</span>
@@ -168,7 +172,8 @@
                 <div class="create-post-card">
                     <div class="create-post-header">
                         <div class="user-avatar">👤</div>
-                        <input type="text" class="post-input" placeholder="What's on your mind?" onclick="showCreatePostModal()">
+                        <input type="text" class="post-input" placeholder="What's on your mind?"
+                            onclick="showCreatePostModal()">
                     </div>
                     <div class="create-post-actions">
                         <button onclick="showCreatePostModal()" class="action-btn">
@@ -203,7 +208,9 @@
             <div class="profile-container">
                 <div class="profile-header-card">
                     <div class="profile-avatar-wrapper">
-                        <img id="profile-avatar-img" class="profile-avatar-large" src="https://via.placeholder.com/100/667eea/ffffff?text=👤" alt="Profile" onclick="openProfilePhotoModal()">
+                        <img id="profile-avatar-img" class="profile-avatar-large"
+                            src="https://via.placeholder.com/100/667eea/ffffff?text=👤" alt="Profile"
+                            onclick="openProfilePhotoModal()">
                         <button class="change-avatar-btn" onclick="openProfilePhotoModal()">
                             📷 Change Photo
                         </button>
@@ -213,7 +220,7 @@
                         <p id="profile-email">email@example.com</p>
                     </div>
                 </div>
-                
+
                 <div class="profile-stats-grid">
                     <div class="stat-card clickable-stat" onclick="showProfileTab('friends')">
                         <h3 id="profile-friends">0</h3>
@@ -315,16 +322,19 @@
                 <span class="modal-close" onclick="closeProfilePhotoModal()">&times;</span>
             </div>
             <div style="padding: 20px;">
-                <button class="profile-photo-option-btn" onclick="document.getElementById('profile-photo-input').click()">
+                <button class="profile-photo-option-btn"
+                    onclick="document.getElementById('profile-photo-input').click()">
                     📷 Upload Photo
                 </button>
-                <input type="file" id="profile-photo-input" accept="image/*" style="display:none;" onchange="uploadProfilePhotoMain(event)">
-                
+                <input type="file" id="profile-photo-input" accept="image/*" style="display:none;"
+                    onchange="uploadProfilePhotoMain(event)">
+
                 <button class="profile-photo-option-btn" onclick="removeProfilePhotoMain()">
                     🗑️ Remove Photo
                 </button>
-                
-                <button class="profile-photo-option-btn" onclick="closeProfilePhotoModal()" style="background: #f0f2f5; color: #333;">
+
+                <button class="profile-photo-option-btn" onclick="closeProfilePhotoModal()"
+                    style="background: #f0f2f5; color: #333;">
                     Cancel
                 </button>
             </div>
@@ -333,4 +343,5 @@
 
     <script src="main-app.js"></script>
 </body>
+
 </html>

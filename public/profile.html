@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="filters.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <nav class="navbar">
         <h2 class="gradient-text floating">🌟 Social Space</h2>
@@ -15,7 +17,8 @@
             <button onclick="goBack()" class="back-btn ripple">
                 <i class="fas fa-arrow-left"></i> Back
             </button>
-            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <a href="home.html"><i class="fas fa-home"></i> Home</a>
+            <a href="public-space.html"><i class="fas fa-globe"></i> Public Space</a>
             <a href="friends.html"><i class="fas fa-user-friends"></i> Friends</a>
             <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
             <button onclick="logout()" class="ripple">
@@ -27,21 +30,26 @@
     <div class="profile-page">
         <!-- Cover Photo -->
         <div class="cover-photo-container">
-            <img id="cover-photo" src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1200&h=400&fit=crop" alt="Cover Photo">
+            <img id="cover-photo"
+                src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1200&h=400&fit=crop"
+                alt="Cover Photo">
             <button class="edit-cover-btn ripple" onclick="document.getElementById('cover-upload').click()">
                 <i class="fas fa-camera"></i> Change Cover
             </button>
-            <input type="file" id="cover-upload" accept="image/*" style="display:none" onchange="uploadCoverPhoto(this)">
+            <input type="file" id="cover-upload" accept="image/*" style="display:none"
+                onchange="uploadCoverPhoto(this)">
         </div>
 
         <!-- Profile Header -->
         <div class="profile-header-section">
             <div class="profile-avatar-large">
-                <img id="profile-avatar" src="https://ui-avatars.com/api/?name=User&size=200&background=667eea&color=fff" alt="Profile">
+                <img id="profile-avatar"
+                    src="https://ui-avatars.com/api/?name=User&size=200&background=667eea&color=fff" alt="Profile">
                 <button class="edit-avatar-btn ripple" onclick="document.getElementById('avatar-upload').click()">
                     <i class="fas fa-camera"></i>
                 </button>
-                <input type="file" id="avatar-upload" accept="image/*" style="display:none" onchange="uploadProfilePicture(this)">
+                <input type="file" id="avatar-upload" accept="image/*" style="display:none"
+                    onchange="uploadProfilePicture(this)">
                 <div class="online-status-large"></div>
             </div>
 
@@ -56,7 +64,8 @@
                 <p id="profile-bio" class="profile-bio">No bio yet</p>
                 <div class="profile-meta">
                     <span><i class="fas fa-map-marker-alt"></i> <span id="profile-location">Location</span></span>
-                    <span><i class="fas fa-link"></i> <a href="#" id="profile-website" target="_blank">Website</a></span>
+                    <span><i class="fas fa-link"></i> <a href="#" id="profile-website"
+                            target="_blank">Website</a></span>
                     <span><i class="fas fa-calendar"></i> Joined <span id="profile-joined">2024</span></span>
                 </div>
             </div>
@@ -149,4 +158,5 @@
 
     <script src="profile.js"></script>
 </body>
+
 </html>

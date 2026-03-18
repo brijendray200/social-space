@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000/api' : '/api';
 let token = localStorage.getItem('token');
 
 if (!token) {
@@ -67,11 +67,11 @@ async function loadUserPosts() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const posts = await response.json();
-        
+
         const container = document.getElementById('user-posts');
         const photosContainer = document.getElementById('user-photos');
         const videosContainer = document.getElementById('user-videos');
-        
+
         if (posts.length === 0) {
             container.innerHTML = '<p class="empty-state"><i class="fas fa-image"></i><br>No posts yet</p>';
             return;
@@ -91,7 +91,7 @@ async function loadUserPosts() {
                 post.media.forEach(m => {
                     const mediaCard = document.createElement('div');
                     mediaCard.className = 'media-card';
-                    
+
                     if (m.type === 'image') {
                         mediaCard.innerHTML = `<img src="${m.url}" alt="Photo" onclick="openMediaModal('${m.url}', 'image')">`;
                         photosContainer.appendChild(mediaCard.cloneNode(true));
@@ -118,11 +118,11 @@ async function loadUserPosts() {
 function createPostCard(post) {
     const div = document.createElement('div');
     div.className = 'post-card';
-    
-    const mediaHTML = post.media && post.media.length > 0 ? 
-        (post.media[0].type === 'image' ? 
-            `<img src="${post.media[0].url}" alt="Post">` : 
-            `<video src="${post.media[0].url}"></video>`) : 
+
+    const mediaHTML = post.media && post.media.length > 0 ?
+        (post.media[0].type === 'image' ?
+            `<img src="${post.media[0].url}" alt="Post">` :
+            `<video src="${post.media[0].url}"></video>`) :
         '<div class="no-media"><i class="fas fa-file-alt"></i></div>';
 
     div.innerHTML = `
@@ -138,7 +138,7 @@ function createPostCard(post) {
             </button>
         </div>
     `;
-    
+
     return div;
 }
 
@@ -148,9 +148,9 @@ async function loadUserFriends() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const friends = await response.json();
-        
+
         const container = document.getElementById('user-friends');
-        
+
         if (friends.length === 0) {
             container.innerHTML = '<p class="empty-state"><i class="fas fa-user-friends"></i><br>No friends yet</p>';
             return;
@@ -256,11 +256,11 @@ async function uploadCoverPhoto(input) {
 
 function showTab(tabName) {
     currentTab = tabName;
-    
+
     // Update tabs
     document.querySelectorAll('.profile-tab').forEach(tab => tab.classList.remove('active'));
     event.target.closest('.profile-tab').classList.add('active');
-    
+
     // Update content
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
     document.getElementById(`${tabName}-tab`).classList.add('active');
@@ -268,7 +268,7 @@ function showTab(tabName) {
 
 function showEditModal() {
     document.getElementById('edit-modal').style.display = 'block';
-    
+
     // Pre-fill form
     document.getElementById('edit-bio').value = document.getElementById('profile-bio').textContent;
     document.getElementById('edit-location').value = document.getElementById('profile-location').textContent;
