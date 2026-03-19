@@ -47,8 +47,15 @@ router.post('/profile-picture', auth, upload.single('profilePicture'), async (re
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const profilePicture = `/uploads/${req.file.filename}`;
-    
+    let profilePicture;
+    if (process.env.VERCEL) {
+      // On Vercel: convert buffer to base64 data URL
+      const base64 = req.file.buffer.toString('base64');
+      profilePicture = `data:${req.file.mimetype};base64,${base64}`;
+    } else {
+      profilePicture = `/uploads/${req.file.filename}`;
+    }
+
     await User.findByIdAndUpdate(req.userId, { profilePicture });
 
     res.json({ profilePicture });

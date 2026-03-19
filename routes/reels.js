@@ -15,9 +15,13 @@ router.post('/', auth, upload.single('video'), async (req, res) => {
       return res.status(400).json({ error: 'Only video files are allowed' });
     }
 
+    const videoUrl = process.env.VERCEL
+      ? `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`
+      : `/uploads/${req.file.filename}`;
+
     const reel = new Reel({
       user: req.userId,
-      video: `/uploads/${req.file.filename}`,
+      video: videoUrl,
       caption: req.body.caption || ''
     });
 

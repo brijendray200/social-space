@@ -21,7 +21,9 @@ router.post('/', auth, upload.array('media', 5), async (req, res) => {
 
     const media = req.files ? req.files.map(file => ({
       type: file.mimetype.startsWith('image') ? 'image' : 'video',
-      url: `/uploads/${file.filename}`
+      url: process.env.VERCEL
+        ? `data:${file.mimetype};base64,${file.buffer.toString('base64')}`
+        : `/uploads/${file.filename}`
     })) : [];
 
     const post = new Post({

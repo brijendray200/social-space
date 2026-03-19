@@ -13,12 +13,15 @@ router.post('/', auth, upload.single('media'), async (req, res) => {
     }
 
     const mediaType = req.file.mimetype.startsWith('image') ? 'image' : 'video';
+    const mediaUrl = process.env.VERCEL
+      ? `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`
+      : `/uploads/${req.file.filename}`;
 
     const story = new Story({
       user: req.userId,
       media: {
         type: mediaType,
-        url: `/uploads/${req.file.filename}`
+        url: mediaUrl
       },
       caption: req.body.caption || ''
     });
