@@ -503,6 +503,7 @@ body {
     padding: 20px;
     margin-bottom: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    color: #333;
 }
 
 .post-header {
@@ -519,6 +520,7 @@ body {
 .post-username {
     font-weight: 600;
     font-size: 15px;
+    color: #1a1a2e;
 }
 
 .post-time {
@@ -529,6 +531,7 @@ body {
 .post-content {
     margin-bottom: 15px;
     line-height: 1.6;
+    color: #333;
 }
 
 .post-media-grid {
@@ -765,25 +768,18 @@ body {
     gap: 30px;
     margin-bottom: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    color: #333;
 }
 
-.profile-avatar-large {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 48px;
-    color: white;
+.profile-header-card h2 {
+    color: #1a1a2e;
+    font-size: 24px;
+    margin-bottom: 5px;
 }
 
-.profile-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-bottom: 20px;
+.profile-header-card p {
+    color: #666;
+    font-size: 14px;
 }
 
 .stat-card {
@@ -792,18 +788,13 @@ body {
     border-radius: 15px;
     text-align: center;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    color: #333;
 }
 
-.stat-card h3 {
-    font-size: 36px;
-    color: #667eea;
-    margin-bottom: 10px;
-}
-
-.profile-tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+.stat-card p {
+    color: #666;
+    font-size: 14px;
+    margin-top: 5px;
 }
 
 .profile-tab {
@@ -815,11 +806,7 @@ body {
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s;
-}
-
-.profile-tab.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    color: #333;
 }
 
 /* Chat */
@@ -882,6 +869,25 @@ body {
 }
 
 /* Responsive */
+
+/* Global: ensure white cards always have dark text */
+.create-post-card,
+.post-card,
+.stat-card,
+.profile-header-card,
+.modal-content,
+.dropdown-panel,
+.conv-item,
+.notif-item,
+.reel-card {
+    color: #333;
+}
+
+.create-post-card *:not(button):not(input):not(textarea):not(.user-avatar):not(.post-action-btn),
+.post-card *:not(button):not(.user-avatar):not(.post-action-btn) {
+    color: inherit;
+}
+
 @media (max-width: 1024px) {
     .main-grid {
         max-width: 100%;
