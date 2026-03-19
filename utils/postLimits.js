@@ -1,15 +1,13 @@
 const Post = require('../models/Post');
 
 // Get post limit based on friend count
-// 0 friends = 1 post per day (for testing/new users)
-// 1 friend = 1 post per day
-// 2 friends = 2 posts per day
-// 3-9 friends = 3 posts per day
+// 0 friends = unlimited (new users can always post)
+// 1-9 friends = friend count posts per day
 // 10+ friends = Unlimited posts
 const getPostLimit = (friendCount) => {
-  if (friendCount === 0) return 0; // if they do not have any friends they cannot post anything
-  if (friendCount >= 10) return Infinity; // if they have more than 10 friend they can post multiple time a day
-  return friendCount; // e.g., if the user have 2 friend they can post 2 times a day
+  if (friendCount === 0) return Infinity; // new users can post freely
+  if (friendCount >= 10) return Infinity;
+  return friendCount;
 };
 
 const canUserPost = async (userId, friendCount) => {
