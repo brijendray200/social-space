@@ -1,14 +1,15 @@
 const nodemailer = require('nodemailer');
 
-// Create transporter - Gmail with explicit SSL
+// Create transporter - Gmail with STARTTLS (port 587, works on Vercel)
 const createTransporter = () => {
   return nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // SSL
+    port: 587,
+    secure: false, // STARTTLS
+    requireTLS: true,
     auth: {
       user: process.env.EMAIL_USER || 'brijendray200@gmail.com',
-      pass: process.env.EMAIL_PASS
+      pass: process.env.EMAIL_PASS || 'uzthyqqawqmmrqeb'
     },
     tls: {
       rejectUnauthorized: false
@@ -20,9 +21,12 @@ const createTransporter = () => {
 const sendOTPEmail = async (email, otp, username) => {
   try {
     const transporter = createTransporter();
-    
+
+    // Verify connection first
+    await transporter.verify();
+
     const mailOptions = {
-      from: `Social Space <${process.env.EMAIL_USER || 'brijendray200@gmail.com'}`,
+      from: `"Social Space" <${process.env.EMAIL_USER || 'brijendray200@gmail.com'}>`,
       to: email,
       subject: 'Password Reset OTP - Social Space',
       text: `Hi ${username},\n\nYour OTP for password reset is: ${otp}\n\nThis OTP is valid for 10 minutes.\n\nIf you didn't request this, please ignore this email.\n\nThanks,\nSocial Space Team`,
@@ -46,12 +50,12 @@ const sendOTPEmail = async (email, otp, username) => {
         </div>
       `
     };
-    
+
     const info = await transporter.sendMail(mailOptions);
     console.log('✅ OTP email sent:', info.messageId);
     return true;
   } catch (error) {
-    console.error('❌ Failed to send OTP email:', error);
+    console.error('❌ Failed to send OTP email:', error.message);
     return false;
   }
 };
