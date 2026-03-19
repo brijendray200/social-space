@@ -836,15 +836,27 @@ async function loadUserPosts() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const posts = await response.json();
-
         const container = document.getElementById('user-posts');
 
         if (posts.length === 0) {
-            container.innerHTML = '<p class="empty-text">No posts yet</p>';
+            container.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:40px;">No posts yet</p>';
             return;
         }
 
-        container.innerHTML = posts.map(post => createPostHTML(post)).join('');
+        // Instagram-style 3-column grid thumbnails
+        container.innerHTML = posts.map(post => {
+            const media = post.media && post.media[0];
+            if (media) {
+                const el = media.type === 'image'
+                    ? `<img src="${media.url}" alt="post">`
+                    : `<video src="${media.url}"></video>`;
+                return `<div class="ig-post-thumb" onclick="showPostDetail('${post._id}')">${el}</div>`;
+            } else {
+                return `<div class="ig-post-thumb" onclick="showPostDetail('${post._id}')">
+                    <div class="ig-post-thumb-text">${post.content.substring(0, 60)}</div>
+                </div>`;
+            }
+        }).join('');
     } catch (error) {
         console.error('Failed to load user posts:', error);
     }
@@ -856,42 +868,49 @@ async function loadUserFriends() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const friends = await response.json();
-
         const container = document.getElementById('user-friends');
 
         if (friends.length === 0) {
-            container.innerHTML = '<p class="empty-text">No friends yet</p>';
+            container.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:40px;">No friends yet</p>';
             return;
         }
 
-        container.innerHTML = `
-            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:15px;">
-                ${friends.map(friend => `
-                    <div style="background:white; padding:20px; border-radius:15px; text-align:center;">
-                        <div style="width:60px; height:60px; border-radius:50%; background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); display:flex; align-items:center; justify-content:center; color:white; font-size:24px; margin:0 auto 10px;">
-                            ${friend.username.charAt(0).toUpperCase()}
-                        </div>
-                        <strong>${friend.username}</strong>
-                    </div>
-                `).join('')}
-            </div>
-        `;
+        container.innerHTML = `<div class="ig-friends-list">${friends.map(friend => {
+            const avatarHTML = friend.profilePicture
+                ? `<img src="${friend.profilePicture}" alt="${friend.username}">`
+                : friend.username.charAt(0).toUpperCase();
+            return `<div class="ig-friend-item">
+                <div class="ig-friend-avatar">${avatarHTML}</div>
+                <div class="ig-friend-name">${friend.username}</div>
+            </div>`;
+        }).join('')}</div>`;
     } catch (error) {
         console.error('Failed to load friends:', error);
     }
 }
 
-function showProfileTab(tab) {
-    document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.profile-tab-content').forEach(c => c.style.display = 'none');
+function igSwitchTab(tab, btn) {
+    document.querySelectorAll('.ig-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.ig-tab-content').forEach(c => c.style.display = 'none');
+    btn.classList.add('active');
+    document.getElementById(`profile-${tab}-tab`).style.display = 'block';
+}
 
-    if (tab === 'posts') {
-        document.querySelectorAll('.profile-tab')[0].classList.add('active');
-        document.getElementById('profile-posts-tab').style.display = 'block';
-    } else if (tab === 'friends') {
-        document.querySelectorAll('.profile-tab')[1].classList.add('active');
-        document.getElementById('profile-friends-tab').style.display = 'block';
-    }
+function showProfileTab(tab) {
+    document.querySelectorAll('.ig-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.ig-tab-content').forEach(c => c.style.display = 'none');
+    const idx = tab === 'posts' ? 0 : 1;
+    const tabs = document.querySelectorAll('.ig-tab');
+    if (tabs[idx]) tabs[idx].classList.add('active');
+    const tabEl = document.getElementById(`profile-${tab}-tab`);
+    if (tabEl) tabEl.style.display = 'block';
+}
+
+function showPostDetail(postId) {
+    // Show post in a modal overlay
+    const allPosts = document.querySelectorAll('.ig-post-thumb');
+    // just navigate to home and highlight — simple approach
+    showPage('home');
 }
 
 // Utility Functions

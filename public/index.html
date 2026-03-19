@@ -205,47 +205,60 @@
 
         <!-- Profile Page -->
         <div id="profile-page" class="page-content" style="display:none;">
-            <div class="profile-container">
-                <div class="profile-header-card">
-                    <div class="profile-avatar-wrapper">
-                        <img id="profile-avatar-img" class="profile-avatar-large"
-                            src="https://via.placeholder.com/100/667eea/ffffff?text=👤" alt="Profile"
-                            onclick="openProfilePhotoModal()">
-                        <button class="change-avatar-btn" onclick="openProfilePhotoModal()">
-                            📷 Change Photo
-                        </button>
+            <div class="ig-profile-container">
+
+                <!-- Top: avatar + stats -->
+                <div class="ig-profile-top">
+                    <div class="ig-avatar-wrap" onclick="openProfilePhotoModal()">
+                        <img id="profile-avatar-img" class="ig-avatar"
+                            src="https://via.placeholder.com/100/667eea/ffffff?text=👤" alt="Profile">
+                        <div class="ig-avatar-edit">✏️</div>
                     </div>
-                    <div class="profile-info">
-                        <h2 id="profile-username">Username</h2>
-                        <p id="profile-email">email@example.com</p>
+                    <div class="ig-stats-row">
+                        <div class="ig-stat" onclick="showProfileTab('posts')">
+                            <span class="ig-stat-num" id="profile-posts">0</span>
+                            <span class="ig-stat-label">posts</span>
+                        </div>
+                        <div class="ig-stat" onclick="showProfileTab('friends')">
+                            <span class="ig-stat-num" id="profile-friends">0</span>
+                            <span class="ig-stat-label">friends</span>
+                        </div>
+                        <div class="ig-stat">
+                            <span class="ig-stat-num" id="profile-likes">0</span>
+                            <span class="ig-stat-label">likes</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="profile-stats-grid">
-                    <div class="stat-card clickable-stat" onclick="showProfileTab('friends')">
-                        <h3 id="profile-friends">0</h3>
-                        <p>Friends</p>
-                    </div>
-                    <div class="stat-card clickable-stat" onclick="showProfileTab('posts')">
-                        <h3 id="profile-posts">0</h3>
-                        <p>Posts</p>
-                    </div>
-                    <div class="stat-card clickable-stat">
-                        <h3 id="profile-likes">0</h3>
-                        <p>Likes</p>
-                    </div>
+                <!-- Username & email -->
+                <div class="ig-profile-bio">
+                    <div class="ig-username" id="profile-username">Username</div>
+                    <div class="ig-email" id="profile-email">email@example.com</div>
                 </div>
 
-                <div class="profile-tabs">
-                    <button class="profile-tab active" onclick="showProfileTab('posts')">My Posts</button>
-                    <button class="profile-tab" onclick="showProfileTab('friends')">Friends</button>
+                <!-- Action buttons -->
+                <div class="ig-action-btns">
+                    <button class="ig-btn-primary" onclick="openProfilePhotoModal()">📷 Edit Photo</button>
+                    <button class="ig-btn-secondary" onclick="showProfileTab('friends')">👥 Friends</button>
                 </div>
 
-                <div id="profile-posts-tab" class="profile-tab-content">
-                    <div id="user-posts"></div>
+                <!-- Tabs -->
+                <div class="ig-tabs">
+                    <button class="ig-tab active" onclick="igSwitchTab('posts', this)">
+                        <span>⊞</span> Posts
+                    </button>
+                    <button class="ig-tab" onclick="igSwitchTab('friends', this)">
+                        <span>👥</span> Friends
+                    </button>
                 </div>
 
-                <div id="profile-friends-tab" class="profile-tab-content" style="display:none;">
+                <!-- Posts grid -->
+                <div id="profile-posts-tab" class="ig-tab-content">
+                    <div id="user-posts" class="ig-posts-grid"></div>
+                </div>
+
+                <!-- Friends list -->
+                <div id="profile-friends-tab" class="ig-tab-content" style="display:none;">
                     <div id="user-friends"></div>
                 </div>
             </div>
