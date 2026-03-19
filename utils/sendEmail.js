@@ -1,35 +1,14 @@
 const nodemailer = require('nodemailer');
 
-// Create transporter
+// Create transporter - always use Gmail
 const createTransporter = () => {
-  // For development, use ethereal email (fake SMTP)
-  // For production, use real SMTP (Gmail, SendGrid, etc.)
-  
-  if (process.env.EMAIL_HOST && process.env.EMAIL_USER) {
-    // Production: Real email service
-    return nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: process.env.EMAIL_PORT || 587,
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
-  } else {
-    // Development: Console log only (no actual email)
-    return {
-      sendMail: async (mailOptions) => {
-        console.log('\n📧 EMAIL WOULD BE SENT:');
-        console.log('To:', mailOptions.to);
-        console.log('Subject:', mailOptions.subject);
-        console.log('Text:', mailOptions.text);
-        console.log('HTML:', mailOptions.html);
-        console.log('\n');
-        return { messageId: 'dev-mode-no-email' };
-      }
-    };
-  }
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER || 'brijendray200@gmail.com',
+      pass: process.env.EMAIL_PASS
+    }
+  });
 };
 
 // Send OTP email
@@ -38,7 +17,7 @@ const sendOTPEmail = async (email, otp, username) => {
     const transporter = createTransporter();
     
     const mailOptions = {
-      from: process.env.EMAIL_FROM || 'Social Space <noreply@socialspace.com>',
+      from: `Social Space <${process.env.EMAIL_USER || 'brijendray200@gmail.com'}`,
       to: email,
       subject: 'Password Reset OTP - Social Space',
       text: `Hi ${username},\n\nYour OTP for password reset is: ${otp}\n\nThis OTP is valid for 10 minutes.\n\nIf you didn't request this, please ignore this email.\n\nThanks,\nSocial Space Team`,
