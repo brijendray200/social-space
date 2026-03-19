@@ -956,6 +956,18 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// Toggle password visibility
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+    }
+}
+
 // Initialize
 if (token) {
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
