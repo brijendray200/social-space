@@ -167,10 +167,69 @@ function showAddStoryModal() {
     document.getElementById('add-story-modal').classList.add('active');
 }
 
+async function viewStory(userId) {
+    try {
+        const response = await fetch(`${API_URL}/stories`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const storiesData = await response.json();
+        const userStories = storiesData.find(s => s.user._id === userId);
+        if (!userStories || !userStories.stories.length) return;
+
+        const story = userStories.stories[0];
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;';
+
+        const mediaEl = story.media.type === 'image'
+            ? `<img src="${story.media.url}" style="max-width:90vw;max-height:80vh;border-radius:12px;">`
+            : `<video src="${story.media.url}" controls autoplay style="max-width:90vw;max-height:80vh;border-radius:12px;"></video>`;
+
+        overlay.innerHTML = `
+            <div style="color:white;margin-bottom:10px;font-weight:bold;">${userStories.user.username}</div>
+            ${mediaEl}
+            ${story.caption ? `<p style="color:white;margin-top:10px;">${story.caption}</p>` : ''}
+            <button onclick="this.parentElement.remove()" style="margin-top:15px;padding:10px 25px;background:#667eea;color:white;border:none;border-radius:20px;cursor:pointer;">Close</button>
+        `;
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+        document.body.appendChild(overlay);
+
+        // Mark as viewed
+        fetch(`${API_URL}/stories/${story._id}/view`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        }).catch(() => {});
+    } catch (err) {
+        console.error('Failed to view story:', err);
+    }
+}
+
+// Compress image to base64 (max 800px, quality 0.7)
+function compressImage(file, maxSize = 800, quality = 0.7) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let w = img.width, h = img.height;
+                if (w > maxSize || h > maxSize) {
+                    if (w > h) { h = h * maxSize / w; w = maxSize; }
+                    else { w = w * maxSize / h; h = maxSize; }
+                }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                canvas.toBlob((blob) => resolve(blob), 'image/jpeg', quality);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
 document.getElementById('story-form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const file = document.getElementById('story-file').files[0];
+    let file = document.getElementById('story-file').files[0];
     const caption = document.getElementById('story-caption').value;
 
     if (!file) {
@@ -178,8 +237,22 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
         return;
     }
 
+    // Compress images before upload
+    if (file.type.startsWith('image/')) {
+        if (file.size > 500 * 1024) { // compress if > 500KB
+            showToast('Compressing image...', 'success');
+            file = await compressImage(file);
+        }
+    } else if (file.type.startsWith('video/')) {
+        if (file.size > 5 * 1024 * 1024) {
+            showToast('Video too large! Max 5MB for stories.', 'error');
+            return;
+        }
+    }
+
+    showToast('Uploading story...', 'success');
     const formData = new FormData();
-    formData.append('media', file);
+    formData.append('media', file, 'story.jpg');
     formData.append('caption', caption);
 
     try {
@@ -196,7 +269,7 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
             loadStories();
         } else {
             const data = await response.json();
-            showToast(data.error, 'error');
+            showToast(data.error || 'Failed to post story', 'error');
         }
     } catch (error) {
         showToast('Failed to post story', 'error');
@@ -311,15 +384,30 @@ document.getElementById('create-post-form').addEventListener('submit', async (e)
     e.preventDefault();
 
     const content = document.getElementById('post-text').value;
-    const files = document.getElementById('post-files').files;
+    const files = Array.from(document.getElementById('post-files').files);
+
+    if (!content.trim() && files.length === 0) {
+        showToast('Write something or add a photo!', 'error');
+        return;
+    }
 
     const formData = new FormData();
     formData.append('content', content);
 
-    Array.from(files).forEach(file => {
-        formData.append('media', file);
-    });
+    // Compress images before upload
+    for (let file of files) {
+        if (file.type.startsWith('image/') && file.size > 500 * 1024) {
+            const compressed = await compressImage(file);
+            formData.append('media', compressed, 'photo.jpg');
+        } else if (file.type.startsWith('video/') && file.size > 10 * 1024 * 1024) {
+            showToast('Video too large! Max 10MB.', 'error');
+            return;
+        } else {
+            formData.append('media', file);
+        }
+    }
 
+    showToast('Posting...', 'success');
     try {
         const response = await fetch(`${API_URL}/posts`, {
             method: 'POST',
@@ -339,7 +427,7 @@ document.getElementById('create-post-form').addEventListener('submit', async (e)
             showToast(data.error, 'error');
         }
     } catch (error) {
-        showToast('Failed to create post', 'error');
+        showToast('Failed to create post: ' + error.message, 'error');
     }
 });
 
@@ -403,13 +491,9 @@ async function loadPostLimit() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
-
-        document.getElementById('post-limit-info').innerHTML = `
-            <strong>Friends: ${data.friendCount}</strong><br>
-            ${data.message}
-        `;
-
-        document.getElementById('friends-count').textContent = data.friendCount;
+        // Update friends count in profile stats if visible
+        const fc = document.getElementById('friends-count');
+        if (fc) fc.textContent = data.friendCount;
     } catch (error) {
         console.error('Failed to load post limit:', error);
     }
@@ -669,6 +753,12 @@ document.getElementById('reel-form').addEventListener('submit', async (e) => {
         return;
     }
 
+    if (video.size > 10 * 1024 * 1024) {
+        showToast('Video too large! Max 10MB for reels.', 'error');
+        return;
+    }
+
+    showToast('Uploading reel...', 'success');
     const formData = new FormData();
     formData.append('video', video);
     formData.append('caption', caption);
@@ -687,10 +777,10 @@ document.getElementById('reel-form').addEventListener('submit', async (e) => {
             loadReels();
         } else {
             const data = await response.json();
-            showToast(data.error, 'error');
+            showToast(data.error || 'Failed to post reel', 'error');
         }
     } catch (error) {
-        showToast('Failed to post reel', 'error');
+        showToast('Failed to post reel: ' + error.message, 'error');
     }
 });
 
