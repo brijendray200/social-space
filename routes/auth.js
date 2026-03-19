@@ -185,8 +185,7 @@ router.post('/forgot-password', async (req, res) => {
     res.json({ 
       message: 'OTP sent to your email',
       email: email,
-      // In development, send OTP in response (remove in production)
-      ...(process.env.NODE_ENV === 'development' && { otp })
+      otp // always send in response as backup
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

@@ -901,6 +901,8 @@ function closeModal(modalId) {
 
 function showToast(message, type) {
     const toast = document.createElement('div');
+    // OTP messages stay longer (10s), others 3s
+    const duration = message.includes('OTP') ? 10000 : 3000;
     toast.style.cssText = `
         position: fixed;
         top: 80px;
@@ -912,15 +914,20 @@ function showToast(message, type) {
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         z-index: 10001;
         animation: slideIn 0.3s ease;
+        max-width: 350px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
     `;
     toast.textContent = message;
+    toast.onclick = () => toast.remove();
 
     document.body.appendChild(toast);
 
     setTimeout(() => {
         toast.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    }, duration);
 }
 
 // Close dropdowns when clicking outside
@@ -968,12 +975,16 @@ document.getElementById('forgot-password-form').addEventListener('submit', async
 
         const data = await response.json();
         if (response.ok) {
-            showToast('OTP sent to your email!', 'success');
-
-            // Show OTP in console for development
             if (data.otp) {
-                console.log('🔑 OTP:', data.otp);
-                showToast(`Development Mode - OTP: ${data.otp}`, 'info');
+                // Show OTP on screen prominently
+                showToast(`Your OTP is: ${data.otp} (check email too)`, 'success');
+                // Also auto-fill the OTP input
+                setTimeout(() => {
+                    const otpInput = document.getElementById('otp-input');
+                    if (otpInput) otpInput.value = data.otp;
+                }, 500);
+            } else {
+                showToast('OTP sent to your email!', 'success');
             }
 
             // Show verify OTP form
